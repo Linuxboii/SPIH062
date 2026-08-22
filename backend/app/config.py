@@ -15,7 +15,8 @@ class Settings(BaseSettings):
     openai_model: str = "gpt-5-nano"
     embedding_model: str = "text-embedding-3-small"
     embedding_dim: int = 1536
-    openai_max_tokens: int = 2000
+    openai_max_tokens: int = 6000
+    openai_reasoning_effort: str = "low"
 
     # ---- retrieval ----
     retrieval_top_k: int = 8
@@ -27,7 +28,7 @@ class Settings(BaseSettings):
     # ---- confidence thresholds (§4.5 of the PRD) ----
     abstain_below: float = 0.35
     low_confidence_below: float = 0.60
-    similarity_floor: float = 0.30
+    similarity_floor: float = 0.42   # absolute cosine, not RRF
 
     # ---- app ----
     cors_origins: str = "*"

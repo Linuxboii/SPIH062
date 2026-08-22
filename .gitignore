@@ -6,3 +6,6 @@ dist/
 *.dump
 *.pkl
 data/
+models/*.pkl
+*.dump
+ingest/__pycache__/
