@@ -1,0 +1,726 @@
+<title>OncoLens</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Spectral:ital,wght@0,400;0,600;0,700;1,400&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+
+<style>
+:root{
+  --bg:#FBFCFC; --surface:#FFFFFF; --surface-2:#F4F7F6;
+  --ink:#12211F; --ink-2:#334743; --muted:#5C6E6B;
+  --rule:#DDE5E3; --rule-2:#EAF0EE;
+  --accent:#0E7C6B; --accent-soft:#E4F1EE;
+  --amber:#B4690E; --amber-soft:#FBF0DF;
+  --red:#A32B24; --red-soft:#FAE9E7;
+  --green:#2C6E49;
+  --shadow:0 1px 2px rgba(18,33,31,.05), 0 8px 24px -12px rgba(18,33,31,.14);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0C1413; --surface:#121C1A; --surface-2:#16211F;
+    --ink:#E6EDEB; --ink-2:#C3D2CF; --muted:#8FA3A0;
+    --rule:#20302D; --rule-2:#1A2725;
+    --accent:#3FBFA6; --accent-soft:#12302B;
+    --amber:#E0A040; --amber-soft:#2E2413;
+    --red:#E08078; --red-soft:#301A18;
+    --green:#63B98A;
+    --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0C1413; --surface:#121C1A; --surface-2:#16211F;
+  --ink:#E6EDEB; --ink-2:#C3D2CF; --muted:#8FA3A0;
+  --rule:#20302D; --rule-2:#1A2725;
+  --accent:#3FBFA6; --accent-soft:#12302B;
+  --amber:#E0A040; --amber-soft:#2E2413;
+  --red:#E08078; --red-soft:#301A18;
+  --green:#63B98A;
+  --shadow:0 1px 2px rgba(0,0,0,.3), 0 8px 24px -12px rgba(0,0,0,.5);
+}
+
+*{box-sizing:border-box}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:"IBM Plex Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  font-size:16px; line-height:1.65; margin:0;
+  -webkit-font-smoothing:antialiased;
+}
+
+.wrap{max-width:1180px;margin:0 auto;padding:0 28px;display:grid;grid-template-columns:1fr;gap:0}
+@media(min-width:1080px){
+  .wrap{grid-template-columns:210px minmax(0,1fr);gap:56px;padding:0 40px}
+}
+
+/* ---------- rail ---------- */
+.rail{display:none}
+@media(min-width:1080px){
+  .rail{display:block;position:sticky;top:0;align-self:start;max-height:100vh;overflow-y:auto;padding:104px 0 48px}
+  .rail ol{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:1px}
+  .rail a{
+    display:grid;grid-template-columns:22px 1fr;gap:8px;
+    padding:5px 8px;border-radius:5px;
+    color:var(--muted);text-decoration:none;font-size:12.5px;line-height:1.4;
+  }
+  .rail a span{font-family:"IBM Plex Mono",monospace;font-size:11px;color:var(--accent);opacity:.65}
+  .rail a:hover{background:var(--surface-2);color:var(--ink)}
+}
+
+/* ---------- masthead ---------- */
+header.mast{padding:80px 0 40px;border-bottom:1px solid var(--rule)}
+.eyebrow{
+  font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:500;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin:0 0 20px
+}
+h1{
+  font-family:Spectral,Georgia,serif;font-weight:700;
+  font-size:clamp(2.7rem,6vw,4.1rem);line-height:1.02;letter-spacing:-.022em;
+  margin:0 0 18px;text-wrap:balance
+}
+.standfirst{
+  font-family:Spectral,Georgia,serif;font-size:clamp(1.12rem,2.1vw,1.38rem);
+  line-height:1.5;color:var(--ink-2);margin:0;max-width:46ch;font-style:italic
+}
+.meta{
+  display:flex;flex-wrap:wrap;gap:0 34px;margin-top:36px;
+  font-family:"IBM Plex Mono",monospace;font-size:12px;color:var(--muted)
+}
+.meta div{display:flex;flex-direction:column;gap:3px;padding:2px 0}
+.meta dt{
+  font-size:10px;letter-spacing:.11em;text-transform:uppercase;opacity:.72
+}
+.meta dd{margin:0;color:var(--ink);font-weight:500}
+.meta dd.ok{color:var(--green)}
+
+/* ---------- sections ---------- */
+main{padding-bottom:110px}
+section{padding:52px 0;border-bottom:1px solid var(--rule-2)}
+section:last-of-type{border-bottom:0}
+h2{
+  font-family:Spectral,Georgia,serif;font-weight:600;
+  font-size:clamp(1.6rem,3vw,2.05rem);line-height:1.15;letter-spacing:-.015em;
+  margin:0 0 8px;text-wrap:balance;
+  display:grid;grid-template-columns:auto 1fr;gap:14px;align-items:baseline
+}
+h2 .num{
+  font-family:"IBM Plex Mono",monospace;font-size:.62em;font-weight:400;
+  color:var(--accent);opacity:.75
+}
+.dek{color:var(--muted);font-size:14.5px;margin:0 0 30px;max-width:64ch}
+h3{
+  font-size:.95rem;font-weight:600;letter-spacing:.005em;
+  margin:38px 0 12px;color:var(--ink)
+}
+h3 .h3num{font-family:"IBM Plex Mono",monospace;color:var(--accent);font-weight:400;margin-right:8px;font-size:.9em}
+p{margin:0 0 15px;max-width:68ch;color:var(--ink-2)}
+p strong,li strong{color:var(--ink);font-weight:600}
+ul,ol{margin:0 0 15px;padding-left:20px;max-width:68ch;color:var(--ink-2)}
+li{margin-bottom:7px}
+li::marker{color:var(--accent)}
+a{color:var(--accent)}
+code{
+  font-family:"IBM Plex Mono",monospace;font-size:.855em;
+  background:var(--surface-2);border:1px solid var(--rule-2);
+  padding:1px 5px;border-radius:4px;color:var(--ink)
+}
+
+/* ---------- tables ---------- */
+.tw{overflow-x:auto;margin:0 0 22px;border:1px solid var(--rule);border-radius:8px;background:var(--surface)}
+table{border-collapse:collapse;width:100%;font-size:13.6px;min-width:460px}
+th,td{text-align:left;padding:11px 15px;border-bottom:1px solid var(--rule-2);vertical-align:top}
+thead th{
+  background:var(--surface-2);color:var(--muted);
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;
+  border-bottom:1px solid var(--rule)
+}
+tbody tr:last-child td{border-bottom:0}
+td strong{color:var(--ink)}
+.num-col{font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+th.num-col{text-align:right}
+code.k{background:none;border:0;padding:0;color:var(--accent)}
+
+/* ---------- code block ---------- */
+pre{
+  font-family:"IBM Plex Mono",monospace;font-size:12.4px;line-height:1.62;
+  background:var(--surface-2);border:1px solid var(--rule);border-radius:8px;
+  padding:18px 20px;overflow-x:auto;margin:0 0 22px;color:var(--ink-2)
+}
+pre code{background:none;border:0;padding:0;font-size:inherit}
+
+/* ---------- callouts ---------- */
+.note{
+  border:1px solid var(--rule);border-left:3px solid var(--accent);
+  background:var(--surface);border-radius:0 8px 8px 0;
+  padding:16px 20px;margin:0 0 22px;box-shadow:var(--shadow)
+}
+.note.warn{border-left-color:var(--amber);background:var(--amber-soft)}
+.note.stop{border-left-color:var(--red);background:var(--red-soft)}
+.note .lbl{
+  font-family:"IBM Plex Mono",monospace;font-size:10.5px;font-weight:500;
+  letter-spacing:.11em;text-transform:uppercase;color:var(--accent);
+  display:block;margin-bottom:7px
+}
+.note.warn .lbl{color:var(--amber)}
+.note.stop .lbl{color:var(--red)}
+.note p:last-child,.note ul:last-child,.note ol:last-child{margin-bottom:0}
+.note p,.note li{color:var(--ink-2)}
+
+/* ---------- stat strip ---------- */
+.stats{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(132px,1fr));
+  gap:1px;background:var(--rule);border:1px solid var(--rule);
+  border-radius:8px;overflow:hidden;margin:0 0 24px
+}
+.stat{background:var(--surface);padding:15px 17px}
+.stat .v{
+  font-family:"IBM Plex Mono",monospace;font-size:1.32rem;font-weight:500;
+  color:var(--ink);font-variant-numeric:tabular-nums;line-height:1.1
+}
+.stat .v.warn{color:var(--amber)}
+.stat .v.ok{color:var(--green)}
+.stat .l{
+  font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--muted);margin-top:6px;font-family:"IBM Plex Mono",monospace
+}
+.stat .sub{font-size:11.5px;color:var(--muted);margin-top:3px}
+
+/* ---------- pills ---------- */
+.pill{
+  display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:10.5px;
+  font-weight:500;letter-spacing:.07em;text-transform:uppercase;
+  padding:2px 8px;border-radius:20px;white-space:nowrap
+}
+.pill.a{background:var(--accent-soft);color:var(--accent)}
+.pill.w{background:var(--amber-soft);color:var(--amber)}
+.pill.r{background:var(--red-soft);color:var(--red)}
+
+/* ---------- claim demo ---------- */
+.demo{border:1px solid var(--rule);border-radius:8px;background:var(--surface);padding:20px;margin:0 0 22px;box-shadow:var(--shadow)}
+.claim{padding:11px 14px;border-radius:6px;font-size:14px;line-height:1.55;margin-bottom:10px}
+.claim:last-child{margin-bottom:0}
+.claim.sourced{background:var(--surface-2);border-left:3px solid var(--green);color:var(--ink-2)}
+.claim.unsourced{background:var(--amber-soft);border-left:3px solid var(--amber);font-style:italic;color:var(--ink-2)}
+.claim .tag{
+  display:block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+  letter-spacing:.11em;text-transform:uppercase;margin-bottom:6px;font-style:normal
+}
+.claim.sourced .tag{color:var(--green)}
+.claim.unsourced .tag{color:var(--amber)}
+.cite{
+  font-family:"IBM Plex Mono",monospace;font-size:10px;vertical-align:super;
+  color:var(--accent);background:var(--accent-soft);
+  padding:1px 4px;border-radius:3px;margin-left:2px
+}
+
+/* ---------- arch diagram ---------- */
+figure{margin:0 0 24px}
+figure svg{display:block;width:100%;height:auto}
+figcaption{font-size:12px;color:var(--muted);margin-top:10px;font-family:"IBM Plex Mono",monospace}
+.svgwrap{overflow-x:auto;border:1px solid var(--rule);border-radius:8px;background:var(--surface);padding:24px}
+
+footer{
+  padding:34px 0 60px;border-top:1px solid var(--rule);
+  font-family:"IBM Plex Mono",monospace;font-size:11.5px;color:var(--muted);
+  display:flex;flex-wrap:wrap;gap:8px 26px
+}
+</style>
+
+<div class="wrap">
+
+<nav class="rail" aria-label="Sections">
+  <ol>
+    <li><a href="#s1"><span>01</span>Problem &amp; Position</a></li>
+    <li><a href="#s2"><span>02</span>Users &amp; Scenarios</a></li>
+    <li><a href="#s3"><span>03</span>Scope</a></li>
+    <li><a href="#s4"><span>04</span>Architecture</a></li>
+    <li><a href="#s5"><span>05</span>Data Model</a></li>
+    <li><a href="#s6"><span>06</span>DTI Prediction</a></li>
+    <li><a href="#s7"><span>07</span>Backend API</a></li>
+    <li><a href="#s8"><span>08</span>Frontend</a></li>
+    <li><a href="#s9"><span>09</span>Deployment</a></li>
+    <li><a href="#s10"><span>10</span>Build Phases</a></li>
+    <li><a href="#s11"><span>11</span>Rubric Mapping</a></li>
+    <li><a href="#s12"><span>12</span>Risks</a></li>
+  </ol>
+</nav>
+
+<div>
+<header class="mast">
+  <p class="eyebrow">Product Requirements · v1.0</p>
+  <h1>OncoLens</h1>
+  <p class="standfirst">A grounded biomedical research assistant for oncology drug discovery — where every claim is bound to a retrieved source, or visibly marked as not.</p>
+  <dl class="meta">
+    <div><dt>Date</dt><dd>2026-08-22</dd></div>
+    <div><dt>Status</dt><dd class="ok">Approved for build</dd></div>
+    <div><dt>Owner</dt><dd>sushanth@avlokai.com</dd></div>
+    <div><dt>Target</dt><dd>Hackathon demo, live</dd></div>
+  </dl>
+</header>
+
+<main>
+
+<!-- ══════════ 1 ══════════ -->
+<section id="s1">
+  <h2><span class="num">01</span>Problem &amp; Position</h2>
+  <p class="dek">Why biomedical grounding is an architectural problem, not a prompting one.</p>
+
+  <p>Biomedical literature grows faster than anyone can read it. PubMed indexes over a million new records a year. Meanwhile the facts a drug-discovery researcher needs are split across incompatible shapes: prose in abstracts, numbers in compound databases, protocols in trial registries. Connecting them is manual, slow work.</p>
+
+  <p>OncoLens answers natural-language questions about oncology compounds and targets by retrieving from real biomedical sources and generating answers where <strong>every claim is bound to a retrieved source or explicitly marked as unsourced</strong>.</p>
+
+  <h3>Why this is not "just a chatbot"</h3>
+  <p>A general chatbot optimises for fluency. This system optimises for traceability — and the difference is architectural, not cosmetic.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Concern</th><th>How a chatbot fails</th><th>How OncoLens is built</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Accuracy</strong></td><td>Generates plausible pharmacology from parametric memory</td><td>Answers assembled only from retrieved passages; the generator never runs without context</td></tr>
+      <tr><td><strong>Structured data</strong></td><td>Flattens <code>IC50 = 12 nM</code> into prose it may corrupt</td><td>Numeric facts live in relational tables, read by SQL — never embedded or paraphrased</td></tr>
+      <tr><td><strong>Uncertainty</strong></td><td>Uniformly confident</td><td>Retrieval confidence computed <em>before</em> generation; below threshold the system abstains and names the gap</td></tr>
+      <tr><td><strong>Provenance</strong></td><td>"Studies show…"</td><td>Every claim carries validated source IDs; unsourced claims are visually quarantined</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="lbl">Non-goals</span>
+    <ul>
+      <li>Not a diagnostic or treatment tool. No patient-specific input, ever.</li>
+      <li>Not general medical Q&amp;A. Out-of-scope questions are refused, not guessed.</li>
+      <li>Not a claim of novel drug discovery. Predictions are ranked hypotheses for triage.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ 2 ══════════ -->
+<section id="s2">
+  <h2><span class="num">02</span>Users &amp; Scenarios</h2>
+  <p class="dek">Primary user: an early-stage drug-discovery researcher or computational biologist triaging a target or compound.</p>
+  <div class="tw"><table>
+    <thead><tr><th>#</th><th>Scenario</th><th>Surface</th></tr></thead>
+    <tbody>
+      <tr><td><code>S1</code></td><td>"What resistance mechanisms are reported for osimertinib in EGFR-mutant NSCLC?"</td><td>Chat</td></tr>
+      <tr><td><code>S2</code></td><td>"Show me osimertinib — properties, targets, trials."</td><td>Compound Explorer</td></tr>
+      <tr><td><code>S3</code></td><td>"Which compounds in the corpus hit KRAS G12C, and how potent are they?"</td><td>Chat → structured table</td></tr>
+      <tr><td><code>S4</code></td><td>"Is this answer real? Where did it come from?"</td><td>Source drawer</td></tr>
+      <tr><td><code>S5</code></td><td>"What might compound X also bind?"</td><td>DTI prediction panel</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ══════════ 3 ══════════ -->
+<section id="s3">
+  <h2><span class="num">03</span>Scope: Oncology</h2>
+  <p class="dek">Depth over breadth. Narrow scope is what makes retrieval quality demonstrable.</p>
+
+  <p><strong>Targets (15):</strong> EGFR, ALK, BRAF, KRAS, ERBB2/HER2, CD274/PD-L1, KDR/VEGFR2, CDK4, CDK6, PARP1, ABL1/BCR-ABL, ROS1, BTK, MAP2K1/MEK1, MTOR.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Source</th><th>Content</th><th class="num-col">Volume</th><th>Access</th></tr></thead>
+    <tbody>
+      <tr><td><strong>PubMed</strong> E-utilities</td><td>Abstracts, titles, authors, journal, year, MeSH</td><td class="num-col">~25,000</td><td><span class="pill a">verified live</span></td></tr>
+      <tr><td><strong>ChEMBL</strong> REST</td><td>Molecules, properties, bioactivity (IC50/Ki/Kd)</td><td class="num-col">~300 · ~10k acts</td><td><span class="pill a">verified live</span></td></tr>
+      <tr><td><strong>PubChem</strong> PUG REST</td><td>Formula, MW, SMILES, XLogP, InChIKey</td><td class="num-col">~300</td><td><span class="pill a">verified live</span></td></tr>
+      <tr><td><strong>ClinicalTrials.gov</strong> v2</td><td>Phase, status, conditions, interventions</td><td class="num-col">~2,000</td><td><span class="pill a">verified live</span></td></tr>
+    </tbody>
+  </table></div>
+  <p>All four endpoints were probed and confirmed live and key-free on 2026-08-22.</p>
+</section>
+
+<!-- ══════════ 4 ══════════ -->
+<section id="s4">
+  <h2><span class="num">04</span>Architecture</h2>
+  <p class="dek">Two retrieval lanes, because biomedical data is half prose and half numbers — and numbers must not pass through a language model.</p>
+
+  <figure>
+    <div class="svgwrap">
+    <svg viewBox="0 0 860 470" role="img" aria-label="OncoLens architecture: frontend calls FastAPI backend, which resolves entities, routes to a literature lane and a structured lane, assembles context, generates with a claim contract, then validates citations against Postgres with pgvector.">
+      <defs>
+        <marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+          <path d="M0,0 L10,5 L0,10 z" fill="currentColor"/>
+        </marker>
+      </defs>
+      <g fill="none" stroke="currentColor" color="var(--muted)" stroke-width="1.3" marker-end="url(#ar)">
+        <path d="M430,72 L430,104"/>
+        <path d="M430,150 L430,182"/>
+        <path d="M395,214 L250,246"/>
+        <path d="M465,214 L610,246"/>
+        <path d="M250,300 L395,332"/>
+        <path d="M610,300 L465,332"/>
+        <path d="M430,364 L430,396"/>
+      </g>
+
+      <!-- frontend -->
+      <rect x="130" y="18" width="600" height="54" rx="8" fill="var(--accent-soft)" stroke="var(--accent)" stroke-width="1.2"/>
+      <text x="430" y="40" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10.5" letter-spacing="1.4" fill="var(--accent)">FRONTEND · REACT + VITE</text>
+      <text x="430" y="59" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" fill="var(--ink)">Chat · Compound Explorer · Source Drawer</text>
+
+      <!-- entity resolver -->
+      <rect x="285" y="104" width="290" height="46" rx="8" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.2"/>
+      <text x="430" y="124" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="var(--ink)">Entity Resolver</text>
+      <text x="430" y="140" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--muted)">Tagrisso · AZD9291 → CHEMBL3353410</text>
+
+      <!-- router -->
+      <rect x="345" y="182" width="170" height="32" rx="8" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.2"/>
+      <text x="430" y="203" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="var(--ink)">Query Router</text>
+
+      <!-- lane A -->
+      <rect x="105" y="246" width="290" height="54" rx="8" fill="var(--surface)" stroke="var(--rule)" stroke-width="1.2"/>
+      <text x="250" y="266" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.2" fill="var(--accent)">LANE A · LITERATURE</text>
+      <text x="250" y="286" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-2)">BM25 + vector → RRF fusion</text>
+
+      <!-- lane B -->
+      <rect x="465" y="246" width="290" height="54" rx="8" fill="var(--surface)" stroke="var(--rule)" stroke-width="1.2"/>
+      <text x="610" y="266" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" letter-spacing="1.2" fill="var(--amber)">LANE B · STRUCTURED</text>
+      <text x="610" y="286" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12" fill="var(--ink-2)">SQL over typed facts</text>
+
+      <!-- generator -->
+      <rect x="255" y="332" width="350" height="32" rx="8" fill="var(--surface-2)" stroke="var(--rule)" stroke-width="1.2"/>
+      <text x="430" y="353" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="var(--ink)">Assembler → Generator (gpt-5-nano)</text>
+
+      <!-- validator -->
+      <rect x="255" y="396" width="350" height="46" rx="8" fill="var(--amber-soft)" stroke="var(--amber)" stroke-width="1.2"/>
+      <text x="430" y="416" text-anchor="middle" font-family="IBM Plex Sans, sans-serif" font-size="12.5" font-weight="600" fill="var(--ink)">Citation Validator</text>
+      <text x="430" y="432" text-anchor="middle" font-family="IBM Plex Mono, monospace" font-size="10" fill="var(--amber)">strips any ID not actually retrieved</text>
+    </svg>
+    </div>
+    <figcaption>Fig. 1 — Request path. The validator is the load-bearing component.</figcaption>
+  </figure>
+
+  <h3><span class="h3num">4.1</span>Entity Resolver</h3>
+  <p>The component that makes this domain-specific rather than generic text RAG. Before retrieval, the query is scanned for biomedical entities and normalised against a synonym table built at ingest from ChEMBL and PubChem synonyms. Gene symbols resolve too — <code>HER2</code> → <code>ERBB2</code>.</p>
+  <p>Resolved entities drive both lanes: Lane B filters SQL by entity ID, Lane A boosts lexical matches across all known synonyms.</p>
+  <div class="note">
+    <span class="lbl">Why it matters</span>
+    <p>Without this, "What is Tagrisso?" retrieves nothing — the corpus overwhelmingly says "osimertinib".</p>
+  </div>
+
+  <h3><span class="h3num">4.2</span>Lane A — Literature retrieval</h3>
+  <p>Hybrid, because pure dense retrieval smears rare lexical tokens like <code>G12C</code>.</p>
+  <ol>
+    <li><strong>Lexical:</strong> Postgres <code>tsvector</code> BM25 over abstract chunks.</li>
+    <li><strong>Dense:</strong> cosine over <code>vector(1536)</code> via pgvector HNSW.</li>
+    <li><strong>Fusion:</strong> Reciprocal Rank Fusion, <code>k = 60</code>, over both lists.</li>
+    <li><strong>Top-k = 8</strong> chunks pass to the assembler.</li>
+  </ol>
+  <p>Chunking splits abstracts at ~220 tokens with 40-token overlap, never across sentence boundaries. Each chunk retains its PMID, so every chunk is independently citable.</p>
+  <p><strong>Embeddings:</strong> OpenAI <code>text-embedding-3-small</code> (1536-d) for both corpus and query — chosen over local PubMedBERT because the deployment host has ~1 GB free RAM and cannot hold PyTorch without risking OOM kills against co-resident production services. One-time corpus cost: <strong>~$0.20</strong>.</p>
+
+  <h3><span class="h3num">4.3</span>Lane B — Structured retrieval</h3>
+  <p>Compound properties, bioactivities, and trials are relational and queried by SQL. They are never embedded and never paraphrased by the model — a molecular weight is a number, and a number that passes through a language model can come out wrong.</p>
+  <p>Structured results are injected into context as a typed block the generator must quote verbatim, <em>and</em> returned to the frontend as raw JSON so the UI renders them as tables independent of anything the model says.</p>
+
+  <h3><span class="h3num">4.4</span>Grounded generation contract</h3>
+  <p>The generator is constrained to a strict JSON schema:</p>
+<pre><code>{
+  "claims": [
+    {
+      "text": "Osimertinib is a third-generation EGFR TKI...",
+      "source_ids": ["PMID:31825714", "CHEMBL:3353410"],
+      "confidence": "high"
+    }
+  ],
+  "abstained": false,
+  "gaps": []
+}</code></pre>
+  <p>The backend then <strong>validates every <code>source_id</code> against the set actually retrieved for this query</strong>. IDs that were not retrieved are stripped and the claim is downgraded to unsourced. Citation fabrication becomes structurally impossible to present as real — the model cannot invent a citation that survives validation.</p>
+  <p>Claims with zero valid sources are not discarded. They are returned flagged and rendered distinctly:</p>
+
+  <div class="demo">
+    <div class="claim sourced">
+      <span class="tag">Grounded in retrieved data</span>
+      Osimertinib is a third-generation EGFR tyrosine kinase inhibitor with activity against the T790M resistance mutation.<span class="cite">PMID 31825714</span>
+    </div>
+    <div class="claim unsourced">
+      <span class="tag">AI inference — not from retrieved data</span>
+      This mechanism may generalise to other third-generation inhibitors in the same class.
+    </div>
+  </div>
+  <p>Model: <code>gpt-5-nano</code>, <code>reasoning_effort: low</code>, temperature 0, response format <code>json_schema</code> with <code>strict: true</code>.</p>
+
+  <h3><span class="h3num">4.5</span>Uncertainty &amp; abstention</h3>
+  <p>A retrieval confidence score is computed <em>before</em> generation:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Signal</th><th class="num-col">Weight</th></tr></thead>
+    <tbody>
+      <tr><td>Top-1 fused retrieval score</td><td class="num-col">0.4</td></tr>
+      <tr><td>Number of chunks above similarity floor</td><td class="num-col">0.3</td></tr>
+      <tr><td>Agreement across independent sources (distinct PMIDs / DBs)</td><td class="num-col">0.3</td></tr>
+    </tbody>
+  </table></div>
+  <div class="tw"><table>
+    <thead><tr><th>Band</th><th>Behaviour</th></tr></thead>
+    <tbody>
+      <tr><td><code>&lt; 0.35</code> <span class="pill r">abstain</span></td><td>Return "Not enough grounded evidence", name the gap, show partial sources. <strong>No generation runs.</strong></td></tr>
+      <tr><td><code>0.35 – 0.6</code> <span class="pill w">low</span></td><td>Generate, banner the answer as low-confidence.</td></tr>
+      <tr><td><code>&gt; 0.6</code> <span class="pill a">high</span></td><td>Normal.</td></tr>
+    </tbody>
+  </table></div>
+  <p>Abstention is a first-class success state, not an error. It is shown in the demo deliberately.</p>
+</section>
+
+<!-- ══════════ 5 ══════════ -->
+<section id="s5">
+  <h2><span class="num">05</span>Data Model</h2>
+  <p class="dek">Text and structure kept in separate table families, joined only by resolved entity IDs.</p>
+<pre><code>-- Literature
+papers(pmid PK, title, abstract, journal, year, authors[], mesh_terms[], doi, url)
+chunks(id PK, pmid FK, ord, text, tsv tsvector, embedding vector(1536))
+
+-- Structured compounds
+compounds(chembl_id PK, pref_name, smiles, inchikey, mol_formula, mol_weight,
+          xlogp, hbd, hba, tpsa, ro5_violations, max_phase, first_approval,
+          pubchem_cid, fingerprint bytea)
+synonyms(id PK, chembl_id FK, synonym, source)      -- entity resolver
+targets(chembl_id PK, pref_name, gene_symbol, organism, target_type)
+activities(id PK, compound_id FK, target_id FK, standard_type, standard_value,
+           standard_units, pchembl_value, assay_chembl_id, source_doc_id)
+
+-- Trials
+trials(nct_id PK, title, phase, status, conditions[], interventions[],
+       enrollment, start_date, url)
+trial_compounds(nct_id FK, chembl_id FK)
+
+-- ML
+dti_predictions(compound_id FK, target_id FK, probability, model_version)</code></pre>
+  <p>Indexes: HNSW on <code>chunks.embedding</code> (cosine), GIN on <code>chunks.tsv</code>, GIN trigram on <code>synonyms.synonym</code>, btree on all foreign keys.</p>
+</section>
+
+<!-- ══════════ 6 ══════════ -->
+<section id="s6">
+  <h2><span class="num">06</span>Drug–Target Interaction Prediction</h2>
+  <p class="dek">The creativity feature, built to be honest rather than impressive.</p>
+
+  <div class="tw"><table>
+    <thead><tr><th>Element</th><th>Choice</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Training data</strong></td><td>Real ChEMBL bioactivities. Positive = <code>pChEMBL ≥ 6</code> (≤1 µM). Negatives from measured-but-inactive pairs plus random unmeasured pairs at controlled ratio.</td></tr>
+      <tr><td><strong>Features</strong></td><td>RDKit ECFP4 Morgan fingerprints (2048-bit, radius 2), precomputed at ingest, plus one-hot target identifier.</td></tr>
+      <tr><td><strong>Model</strong></td><td>Gradient-boosted trees (scikit-learn), one multi-label model across 15 targets. Ships as a &lt;10 MB pickle, infers in milliseconds.</td></tr>
+      <tr><td><strong>Calibration</strong></td><td>Isotonic regression on a held-out split, so the displayed probability is a real probability.</td></tr>
+      <tr><td><strong>Validation</strong></td><td><strong>Scaffold split, not random.</strong> Random splits leak analogues between train and test and inflate scores. Report ROC-AUC and PR-AUC per target.</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note warn">
+    <span class="lbl">Presentation rules — non-negotiable</span>
+    <ul>
+      <li>Every prediction labelled <strong>Predicted — not experimental</strong>.</li>
+      <li>Calibrated probability shown numerically, never as a bare "yes".</li>
+      <li>Predictions reproducing a known experimental activity are marked as such, not presented as discoveries.</li>
+      <li>Held-out performance displayed in the UI next to the predictions.</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ══════════ 7 ══════════ -->
+<section id="s7">
+  <h2><span class="num">07</span>Backend — API Surface</h2>
+  <p class="dek">FastAPI, all responses Pydantic-typed.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Method</th><th>Path</th><th>Purpose</th></tr></thead>
+    <tbody>
+      <tr><td><span class="pill a">POST</span></td><td><code>/api/chat</code></td><td>Ask a question. SSE stream. Returns claims + sources + confidence.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/compound/{query}</code></td><td>Resolve and return a full compound dossier.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/compound/{id}/targets</code></td><td>Known activities + predicted interactions.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/target/{gene}</code></td><td>Target dossier: compounds, potencies, trials.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/source/{type}/{id}</code></td><td>Full retrieved passage for the source drawer.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/search/suggest?q=</code></td><td>Typeahead over the synonym table.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/stats</code></td><td>Corpus counts for the "what's in here" panel.</td></tr>
+      <tr><td><span class="pill a">GET</span></td><td><code>/api/health</code></td><td>Liveness + DB + embedding-API reachability.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Module layout</h3>
+<pre><code>backend/app/
+  main.py              FastAPI app, CORS, routers
+  config.py            pydantic-settings
+  db.py                connection pool
+  models.py            SQLAlchemy tables
+  schemas.py           Pydantic request/response
+  routers/             chat.py  compound.py  target.py  source.py  meta.py
+  services/
+    entities.py        entity resolution + synonym lookup
+    retrieval.py       BM25 + vector + RRF fusion
+    structured.py      SQL fact queries
+    assembler.py       context building, token budgeting
+    generator.py       OpenAI call, strict JSON schema
+    validator.py       citation validation, unsourced flagging
+    confidence.py      retrieval confidence scoring
+    dti.py             model load + inference
+ingest/                pubmed.py chembl.py pubchem.py trials.py embed.py
+                       fingerprints.py train_dti.py   ← runs LOCALLY only</code></pre>
+  <div class="note">
+    <span class="lbl">Deployment split</span>
+    <p>Everything under <code>ingest/</code> runs on the local workstation. The VPS receives only <code>backend/app/</code> plus a pre-built database dump — keeping RDKit, model training, and bulk embedding off the constrained server.</p>
+  </div>
+</section>
+
+<!-- ══════════ 8 ══════════ -->
+<section id="s8">
+  <h2><span class="num">08</span>Frontend</h2>
+  <p class="dek">React 18 + Vite. No component library — hand-built, so the grounding UI behaves exactly as specified.</p>
+
+  <h3><span class="h3num">8.1</span>Global</h3>
+  <p>A <strong>persistent, non-dismissible disclaimer bar</strong> at the top of the viewport: <em>"Research tool. Grounded in public biomedical data. Not medical advice — do not use for diagnosis or treatment."</em> Dark/light aware, responsive to 768 px.</p>
+
+  <h3><span class="h3num">8.2</span>Chat <code>/</code></h3>
+  <p>Two columns: conversation left, evidence panel pinned right.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Element</th><th>Treatment</th></tr></thead>
+    <tbody>
+      <tr><td>Sourced claim</td><td>Normal text, superscript citation chips, hover shows title + year, click opens the source drawer.</td></tr>
+      <tr><td>Unsourced claim</td><td>Amber left border, italic, headed <em>AI inference — not from retrieved data</em>. <strong>Visually impossible to confuse with a sourced claim — the single most important pixel in the app.</strong></td></tr>
+      <tr><td>Confidence chip</td><td>Green / amber / grey at the answer head.</td></tr>
+      <tr><td>Abstention</td><td>Dedicated card, not an error toast: what was asked, what was found, what was missing, plus partial sources.</td></tr>
+      <tr><td>Evidence panel</td><td>Every retrieved source as a card — title, journal, year, retrieval score, matched snippet. Clicking a chip scrolls and highlights.</td></tr>
+      <tr><td>Structured blocks</td><td>Rendered as real tables from <code>structured</code>, never as model prose.</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3><span class="h3num">8.3</span>Compound Explorer <code>/compound/:id</code></h3>
+  <ul>
+    <li><strong>Header</strong> — preferred name, ChEMBL + PubChem IDs, max phase badge, approval year.</li>
+    <li><strong>Structure</strong> — 2D depiction rendered client-side from SMILES with SmilesDrawer (pure JS canvas, no backend load, no external calls).</li>
+    <li><strong>Properties table</strong> — formula, MW, XLogP, HBD, HBA, TPSA, each cell showing its source database.</li>
+    <li><strong>Lipinski Ro5 panel</strong> — four rules, pass/fail each, violation count.</li>
+    <li><strong>Known targets</strong> — measured activities with assay type, value, units, pChEMBL, sorted by potency, each row linking to its ChEMBL assay.</li>
+    <li><strong>Predicted targets</strong> — separate amber-framed panel headed <em>Predicted — not experimental</em>, with calibrated probabilities and held-out AUC.</li>
+    <li><strong>Trials</strong> — phase, status, condition, enrolment, link out.</li>
+    <li><strong>Recent literature</strong> — newest abstracts, one-line grounded summaries, PubMed links.</li>
+  </ul>
+
+  <h3><span class="h3num">8.4</span>Source Drawer</h3>
+  <p>Slides from the right over any surface. Full retrieved passage with the matched span highlighted, full metadata, retrieval score with a plain-language explanation of <em>why</em> it was retrieved, and a deep link to the primary source.</p>
+
+  <h3><span class="h3num">8.5</span>Component inventory</h3>
+<pre><code>App · DisclaimerBar · ChatView · MessageList · ClaimBlock · CitationChip
+ConfidenceBadge · AbstentionCard · EvidencePanel · SourceCard · SourceDrawer
+CompoundView · MoleculeCanvas · PropertyTable · LipinskiPanel · ActivityTable
+PredictionPanel · TrialTable · RecentPapers · SearchBar · StatsBar</code></pre>
+</section>
+
+<!-- ══════════ 9 ══════════ -->
+<section id="s9">
+  <h2><span class="num">09</span>Deployment</h2>
+  <p class="dek">Host <code>203.57.85.191</code> runs 20+ services on 3.7 GB RAM. The inference-light design is a direct consequence of these numbers.</p>
+
+  <div class="stats">
+    <div class="stat"><div class="v ok">13 GB</div><div class="l">Disk free</div><div class="sub">was 9 GB · 74%</div></div>
+    <div class="stat"><div class="v warn">1.1 GB</div><div class="l">RAM avail</div><div class="sub">of 3.7 GB total</div></div>
+    <div class="stat"><div class="v warn">2.0 GB</div><div class="l">Swap used</div><div class="sub">saturated</div></div>
+    <div class="stat"><div class="v ok">~150 MB</div><div class="l">OncoLens RAM</div><div class="sub">measured target</div></div>
+  </div>
+
+  <h3><span class="h3num">9.1</span>Topology</h3>
+  <div class="tw"><table>
+    <thead><tr><th>Component</th><th>Placement</th><th class="num-col">Port</th></tr></thead>
+    <tbody>
+      <tr><td>Postgres 16 + pgvector</td><td><strong>New isolated container</strong>, reusing the <code>pgvector/pgvector:pg16</code> image already on the host</td><td class="num-col">5434</td></tr>
+      <tr><td>FastAPI backend</td><td>systemd service, venv</td><td class="num-col">8891</td></tr>
+      <tr><td>React build</td><td>Static, served by nginx</td><td class="num-col">via 8891</td></tr>
+    </tbody>
+  </table></div>
+  <p>The corpus is built entirely on the local workstation and shipped as a <code>pg_dump</code>. The VPS never embeds a corpus, never trains a model, and never loads PyTorch or RDKit.</p>
+
+  <h3><span class="h3num">9.2</span>Venkateswara Polymers — protected</h3>
+  <p>A live production ERP shares this host. These assets are off-limits:</p>
+  <div class="tw"><table>
+    <thead><tr><th>Asset</th><th>Detail</th></tr></thead>
+    <tbody>
+      <tr><td>Process</td><td>PM2 <code>vp-api</code>, uvicorn, <strong>port 3000</strong>, cwd <code>/root/backend</code></td></tr>
+      <tr><td>Public</td><td><code>https://vp-api.avlokai.com</code></td></tr>
+      <tr><td>Routing</td><td>cloudflared tunnel <code>n8n-tunnel</code>, <code>/etc/cloudflared/config.yml</code></td></tr>
+      <tr><td>Database</td><td><code>venkateswara_polymers</code> — <strong>host Postgres 16, port 5432</strong>, owner <code>admin</code></td></tr>
+      <tr><td>Logs</td><td><code>/root/.pm2/logs/vp-api-*.log</code></td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note stop">
+    <span class="lbl">Hard rules</span>
+    <ol>
+      <li>Never edit <code>/etc/cloudflared/config.yml</code> — it is shared by four hostnames; a syntax error or a <code>cloudflared</code> restart takes VP offline.</li>
+      <li>Never use the host Postgres on 5432. OncoLens gets its own container on 5434.</li>
+      <li>Never bind port 3000, 8890 (MetroMind), or any port in the in-use set.</li>
+      <li>Run <code>pm2 save</code> only after confirming VP is <code>online</code>, so a bad state is not persisted.</li>
+      <li>VP health check — HTTP 200 on <code>localhost:3000</code> <em>and</em> <code>https://vp-api.avlokai.com</code>, plus a DB row count — <strong>before and after every deployment step</strong>.</li>
+    </ol>
+  </div>
+
+  <h3><span class="h3num">9.3</span>Rollback</h3>
+  <p>Single-command teardown: stop the systemd unit, remove the nginx site, stop and remove the OncoLens container. Nothing OncoLens installs is shared with any other service, so rollback cannot affect VP or the other twenty.</p>
+</section>
+
+<!-- ══════════ 10 ══════════ -->
+<section id="s10">
+  <h2><span class="num">10</span>Build Phases</h2>
+  <p class="dek">Each phase has an exit gate. No phase starts until the previous gate is green.</p>
+  <div class="tw"><table>
+    <thead><tr><th class="num-col">#</th><th>Phase</th><th>Output</th><th>Gate</th></tr></thead>
+    <tbody>
+      <tr><td class="num-col">0</td><td><strong>Scaffold</strong></td><td>Repo, compose, schema, migrations</td><td>Container up, tables exist</td></tr>
+      <tr><td class="num-col">1</td><td><strong>Ingest</strong></td><td>PubMed + ChEMBL + PubChem + trials loaded</td><td>Row counts match targets</td></tr>
+      <tr><td class="num-col">2</td><td><strong>Embed</strong></td><td>Chunks embedded, HNSW built</td><td>Vector search returns sane neighbours</td></tr>
+      <tr><td class="num-col">3</td><td><strong>Retrieval</strong></td><td>Entity resolver, hybrid search, RRF</td><td>Fixed query set returns correct PMIDs</td></tr>
+      <tr><td class="num-col">4</td><td><strong>Generation</strong></td><td>Claim contract, validator, confidence</td><td>Fabricated citations provably stripped</td></tr>
+      <tr><td class="num-col">5</td><td><strong>API</strong></td><td>All endpoints, SSE streaming</td><td>Contract tests green</td></tr>
+      <tr><td class="num-col">6</td><td><strong>Frontend</strong></td><td>Three surfaces, grounding UI</td><td>Manual walkthrough</td></tr>
+      <tr><td class="num-col">7</td><td><strong>DTI</strong></td><td>Fingerprints, training, calibration</td><td>Scaffold-split AUC reported</td></tr>
+      <tr><td class="num-col">8</td><td><strong>Deploy</strong></td><td>Dump shipped, service up, nginx routed</td><td>VP health green before <em>and</em> after</td></tr>
+      <tr><td class="num-col">9</td><td><strong>Demo prep</strong></td><td>Scripted queries incl. an abstention case</td><td>Full dry run</td></tr>
+    </tbody>
+  </table></div>
+</section>
+
+<!-- ══════════ 11 ══════════ -->
+<section id="s11">
+  <h2><span class="num">11</span>Rubric Mapping</h2>
+  <p class="dek">Where each mark is earned.</p>
+  <div class="tw"><table>
+    <thead><tr><th>Criterion</th><th class="num-col">Marks</th><th>Where earned</th></tr></thead>
+    <tbody>
+      <tr><td>Understanding the problem</td><td class="num-col">10</td><td>§1 two-lane rationale; structured-vs-text split; abstention as a design goal</td></tr>
+      <tr><td><strong>Data grounding &amp; accuracy</strong></td><td class="num-col">25</td><td>§4.2–4.4 hybrid retrieval, claim contract, <strong>server-side citation validation</strong></td></tr>
+      <tr><td><strong>Domain-specific analysis</strong></td><td class="num-col">20</td><td>§4.1 entity resolution; §4.3 SQL over bioactivity; §6 fingerprints; Compound Explorer</td></tr>
+      <tr><td>Responsible AI</td><td class="num-col">15</td><td>§4.5 abstention, confidence bands, unsourced quarantine, persistent disclaimer, "predicted not experimental"</td></tr>
+      <tr><td>Ease of use</td><td class="num-col">10</td><td>§8 typeahead, one-click citations, no jargon in chrome</td></tr>
+      <tr><td>Creativity</td><td class="num-col">10</td><td>§6 calibrated DTI with scaffold split; live evidence panel; abstention shown deliberately</td></tr>
+      <tr><td>Demo &amp; explanation</td><td class="num-col">10</td><td>§10 phase 9; the validator can be demonstrated live</td></tr>
+    </tbody>
+  </table></div>
+
+  <div class="note">
+    <span class="lbl">Demo moment worth rehearsing</span>
+    <p>Ask something the corpus cannot support, and let it abstain. Most teams will hide that. Showing it — with the gap named and partial sources still listed — is the clearest possible proof the grounding is real.</p>
+  </div>
+</section>
+
+<!-- ══════════ 12 ══════════ -->
+<section id="s12">
+  <h2><span class="num">12</span>Risks</h2>
+  <div class="tw"><table>
+    <thead><tr><th>Risk</th><th>Impact</th><th>Mitigation</th></tr></thead>
+    <tbody>
+      <tr><td>Host OOM kills a client service</td><td><span class="pill r">severe</span></td><td>Inference-light design; no torch; measured 150 MB footprint; isolated container</td></tr>
+      <tr><td>Demo-day network failure</td><td><span class="pill r">severe</span></td><td>Corpus fully local to the box; only generation needs network. Extractive fallback returns cited passages with no LLM</td></tr>
+      <tr><td>OpenAI rate limit / outage</td><td><span class="pill w">moderate</span></td><td>Same extractive fallback; retrieval and Compound Explorer stay fully functional</td></tr>
+      <tr><td>PubMed throttling during ingest</td><td><span class="pill w">moderate</span></td><td>3 req/s honoured, batches of 200, resumable checkpointing</td></tr>
+      <tr><td>DTI model reads as overclaiming</td><td><span class="pill w">moderate</span></td><td>Scaffold split, calibration, "predicted not experimental" framing, AUC shown</td></tr>
+      <tr><td>Scope creep beyond oncology</td><td><span class="pill w">moderate</span></td><td>Target list frozen at 15</td></tr>
+    </tbody>
+  </table></div>
+
+  <h3>Open items</h3>
+  <ul>
+    <li>VPS access is currently a shared password path; rotation to key-based auth is recommended.</li>
+    <li>Host swap is saturated and will not clear without a <code>swapoff/swapon</code> cycle, which needs 2 GB free RAM. Deferred as too risky while client services are live.</li>
+  </ul>
+</section>
+
+</main>
+
+<footer>
+  <span>OncoLens PRD v1.0</span>
+  <span>2026-08-22</span>
+  <span>Research tool — not medical advice</span>
+</footer>
+</div>
+</div>
