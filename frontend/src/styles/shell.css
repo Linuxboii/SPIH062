@@ -1,0 +1,170 @@
+/* ── disclaimer ───────────────────────────────────────────── */
+.disclaimer {
+  position: sticky;
+  top: 0;
+  z-index: 60;
+  background: var(--ink);
+  color: var(--bone);
+}
+[data-theme='dark'] .disclaimer,
+:root:not([data-theme='light']) .disclaimer { background: var(--surface-3); }
+
+.disclaimer-inner {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  min-height: 34px;
+  padding-block: 6px;
+}
+
+.disclaimer-mark {
+  width: 5px; height: 5px;
+  border-radius: 50%;
+  background: var(--sage);
+  flex: none;
+}
+[data-theme='dark'] .disclaimer-mark,
+:root:not([data-theme='light']) .disclaimer-mark { background: var(--sage); }
+
+.disclaimer p {
+  font-size: 12px;
+  letter-spacing: .01em;
+  line-height: 1.4;
+  color: color-mix(in srgb, var(--bone) 82%, transparent);
+}
+[data-theme='dark'] .disclaimer p,
+:root:not([data-theme='light']) .disclaimer p { color: var(--ink-2); }
+
+.disclaimer strong { font-weight: 600; color: var(--bone); }
+[data-theme='dark'] .disclaimer strong,
+:root:not([data-theme='light']) .disclaimer strong { color: var(--ink); }
+
+/* ── nav ──────────────────────────────────────────────────── */
+.nav {
+  position: sticky;
+  top: 34px;
+  z-index: 50;
+  background: color-mix(in srgb, var(--bone) 82%, transparent);
+  backdrop-filter: saturate(1.4) blur(12px);
+  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  border-bottom: 1px solid transparent;
+  transition:
+    border-color var(--t-base) var(--ease),
+    background var(--t-base) var(--ease);
+}
+.nav.is-lifted {
+  border-bottom-color: var(--rule);
+  background: color-mix(in srgb, var(--bone) 93%, transparent);
+}
+
+.nav-inner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  height: 62px;
+}
+
+.wordmark {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  color: var(--ink);
+  font-family: var(--serif);
+  font-size: 1.05rem;
+  font-weight: 400;
+  letter-spacing: -.008em;
+  text-decoration: none;
+  flex: none;
+}
+.wordmark:hover { text-decoration: none; }
+.wordmark svg { color: var(--sage); transition: transform var(--t-slow) var(--ease-out); }
+.wordmark:hover svg { transform: rotate(90deg); }
+
+.nav-links {
+  display: none;
+  gap: 28px;
+  margin-inline: auto;
+}
+@media (min-width: 880px) { .nav-links { display: flex; } }
+
+.nav-links a {
+  font-size: 13.5px;
+  color: var(--muted);
+  text-decoration: none;
+  position: relative;
+  padding-block: 4px;
+  transition: color var(--t-fast) var(--ease);
+}
+.nav-links a::after {
+  content: '';
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 0; height: 1px;
+  background: var(--sage);
+  transition: width var(--t-base) var(--ease-out);
+}
+.nav-links a:hover { color: var(--ink); text-decoration: none; }
+.nav-links a:hover::after,
+.nav-links a.active::after { width: 100%; }
+.nav-links a.active { color: var(--ink); }
+
+.nav-actions { flex: none; }
+.nav-cta { height: 36px; padding-inline: 16px; font-size: 13.5px; }
+
+/* ── footer ───────────────────────────────────────────────── */
+.foot {
+  background: var(--surface-2);
+  border-top: 1px solid var(--rule);
+  padding-top: clamp(52px, 7vw, 76px);
+}
+
+.foot-inner {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 40px;
+  padding-bottom: 44px;
+}
+@media (min-width: 780px) {
+  .foot-inner { grid-template-columns: 1.4fr 1fr; }
+}
+
+.foot-tag {
+  margin-top: 14px;
+  font-size: 14px;
+  color: var(--muted);
+  max-width: 36ch;
+  line-height: 1.55;
+}
+
+.foot-cols {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 32px;
+}
+.foot-cols .label { display: block; margin-bottom: 14px; }
+.foot-cols ul { display: flex; flex-direction: column; gap: 9px; }
+.foot-cols a {
+  font-size: 13.5px;
+  color: var(--ink-2);
+  text-decoration: none;
+  transition: color var(--t-fast) var(--ease);
+}
+.foot-cols a:hover { color: var(--sage); text-decoration: none; }
+
+.foot-legal {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px 24px;
+  padding-block: 22px 30px;
+  border-top: 1px solid var(--rule);
+}
+.foot-legal p {
+  font-size: 12px;
+  color: var(--faint);
+  line-height: 1.6;
+  max-width: 78ch;
+}
+.foot-meta { letter-spacing: .1em; font-size: 11px; }

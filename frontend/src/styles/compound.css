@@ -1,0 +1,206 @@
+.compound { padding-bottom: 72px; }
+.cmp-loading { padding-block: 18vh; display: grid; place-items: center; }
+
+/* ── header ───────────────────────────────────────────────── */
+.cmp-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 20px;
+  padding-block: 44px 34px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 32px;
+}
+.cmp-header .eyebrow { margin-bottom: 12px; }
+
+.cmp-h1 {
+  font-size: clamp(2.1rem, 4.6vw, 3.1rem);
+  font-weight: 300;
+  letter-spacing: -.02em;
+  line-height: 1.06;
+  margin-bottom: 10px;
+}
+
+.cmp-idline {
+  font-size: 11.5px;
+  color: var(--faint);
+  letter-spacing: .04em;
+  margin-bottom: 16px;
+  word-break: break-all;
+}
+
+.cmp-syns { display: flex; flex-wrap: wrap; align-items: center; gap: 7px; }
+.cmp-syns .label { margin-right: 3px; }
+
+.cmp-badges { display: flex; flex-wrap: wrap; gap: 7px; }
+
+/* ── layout ───────────────────────────────────────────────── */
+.cmp-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (min-width: 980px) {
+  .cmp-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+.cmp-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+
+/* ── panel ────────────────────────────────────────────────── */
+.panel { padding: 20px 22px 22px; }
+.panel-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--rule);
+  margin-bottom: 16px;
+}
+.panel-title { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+.panel-note {
+  font-size: 12.5px;
+  color: var(--muted);
+  line-height: 1.5;
+  margin-top: -6px;
+  margin-bottom: 16px;
+}
+.panel-empty { font-size: 13.5px; color: var(--faint); line-height: 1.55; }
+
+/* ── molecule ─────────────────────────────────────────────── */
+.mol-wrap {
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 8px;
+  margin-bottom: 16px;
+}
+.mol-canvas { width: 100%; display: block; }
+.mol-empty {
+  padding: 34px 16px;
+  text-align: center;
+  font-size: 13px;
+  color: var(--faint);
+}
+
+.smiles .label { display: block; margin-bottom: 7px; }
+.smiles code {
+  display: block;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  line-height: 1.6;
+  color: var(--ink-2);
+  background: var(--surface-2);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  word-break: break-all;
+}
+
+/* ── properties ───────────────────────────────────────────── */
+.props {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
+  gap: 16px 18px;
+}
+.props dt { margin-bottom: 4px; }
+.props dd { font-size: 14.5px; color: var(--ink); }
+
+/* ── Ro5 ──────────────────────────────────────────────────── */
+.ro5 { display: flex; flex-direction: column; gap: 2px; }
+.ro5 li {
+  display: grid;
+  grid-template-columns: 20px 1fr auto;
+  gap: 10px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--rule-2);
+  font-size: 13.5px;
+}
+.ro5 li:last-child { border-bottom: 0; }
+.ro5-mark {
+  display: grid;
+  place-items: center;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  font-size: 10px;
+  font-weight: 700;
+}
+.is-pass .ro5-mark { background: var(--sage-soft); color: var(--sage); }
+.is-fail .ro5-mark { background: var(--ochre-soft); color: var(--ochre); }
+.ro5-rule { color: var(--ink-2); }
+.ro5-val { font-size: 12.5px; color: var(--muted); }
+
+/* ── tables ───────────────────────────────────────────────── */
+.tscroll { overflow-x: auto; margin-inline: -22px; padding-inline: 22px; }
+.dtable { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 380px; }
+.dtable th, .dtable td {
+  text-align: left;
+  padding: 9px 12px 9px 0;
+  border-bottom: 1px solid var(--rule-2);
+}
+.dtable th {
+  font-family: var(--mono);
+  font-size: 10px;
+  font-weight: 500;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  white-space: nowrap;
+}
+.dtable td { color: var(--ink-2); }
+.dtable tbody tr:last-child td { border-bottom: 0; }
+.dtable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-right: 0; }
+
+/* ── predictions ──────────────────────────────────────────── */
+.preds { display: flex; flex-direction: column; gap: 16px; }
+.pred { padding-bottom: 14px; border-bottom: 1px solid var(--rule-2); }
+.pred:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.pred-top {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 8px;
+}
+.pred-target { font-size: 14px; font-weight: 500; color: var(--ink); }
+.pred-p { font-size: 13px; color: var(--ochre); }
+
+.pred-track {
+  height: 3px;
+  background: var(--rule);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 9px;
+}
+.pred-fill {
+  height: 100%;
+  background: var(--ochre);
+  border-radius: 2px;
+  transition: width var(--t-slow) var(--ease-out);
+}
+.pred-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.pred-auc { font-size: 10.5px; color: var(--faint); }
+
+/* ── trials + papers ──────────────────────────────────────── */
+.trials, .papers { display: flex; flex-direction: column; gap: 14px; }
+
+.trial, .paper { padding-bottom: 13px; border-bottom: 1px solid var(--rule-2); }
+.trial:last-child, .paper:last-child { border-bottom: 0; padding-bottom: 0; }
+
+.trial-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
+.trial-id { font-size: 11.5px; color: var(--sage); }
+.trial-title { font-size: 13.5px; color: var(--ink-2); line-height: 1.45; margin-bottom: 5px; }
+.trial-meta { font-size: 10.5px; color: var(--faint); }
+
+.paper-title {
+  display: block;
+  font-size: 13.5px;
+  color: var(--ink);
+  line-height: 1.45;
+  margin-bottom: 5px;
+  text-decoration: none;
+}
+.paper-title:hover { color: var(--sage); text-decoration: underline; text-underline-offset: 3px; }
+.paper-meta { font-size: 10.5px; color: var(--faint); }

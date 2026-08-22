@@ -1,0 +1,137 @@
+/* ─────────────────────────────────────────────────────────────
+   OncoLens design tokens
+
+   Palette is deliberately low-saturation: researchers read this for
+   long stretches, and high-chroma UI fatigues. Sage carries the accent,
+   ochre is reserved for exactly one meaning — "not grounded in retrieved
+   data" — so colour itself becomes part of the provenance vocabulary.
+   ───────────────────────────────────────────────────────────── */
+
+:root {
+  /* ground + surface */
+  --bone:        #FAFAF7;
+  --surface:     #FFFFFF;
+  --surface-2:   #F3F5F1;
+  --surface-3:   #EBEEE9;
+
+  /* ink */
+  --ink:         #1C2622;
+  --ink-2:       #3D4A44;
+  --ink-3:       #5A6A62;
+  --muted:       #78877F;
+  --faint:       #9AA79F;
+
+  /* lines */
+  --rule:        #E2E7E1;
+  --rule-2:      #EDF0EB;
+
+  /* accent — soft clinical sage */
+  --sage:        #4F8271;
+  --sage-deep:   #3D6A5B;
+  --sage-soft:   #EDF3F0;
+  --sage-line:   #C9DED5;
+
+  /* ochre — reserved for unsourced / predicted */
+  --ochre:       #9C7C36;
+  --ochre-soft:  #F8F3E7;
+  --ochre-line:  #E5D6B4;
+
+  /* semantic */
+  --grounded:    #4F8271;
+  --caution:     #9C7C36;
+  --alert:       #A0524B;
+  --alert-soft:  #FAEFEE;
+
+  /* elevation — very soft, never dramatic */
+  --lift-1: 0 1px 2px rgba(28, 38, 34, .04);
+  --lift-2: 0 1px 3px rgba(28, 38, 34, .05), 0 8px 24px -14px rgba(28, 38, 34, .12);
+  --lift-3: 0 2px 6px rgba(28, 38, 34, .06), 0 20px 48px -20px rgba(28, 38, 34, .16);
+
+  /* type */
+  --serif: 'Newsreader', Georgia, 'Times New Roman', serif;
+  --sans:  'Public Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --mono:  'IBM Plex Mono', ui-monospace, 'SF Mono', Menlo, monospace;
+
+  /* motion — slow and calm; nothing snaps */
+  --ease:      cubic-bezier(.22, .61, .36, 1);
+  --ease-out:  cubic-bezier(.16, 1, .3, 1);
+  --t-fast:    180ms;
+  --t-base:    320ms;
+  --t-slow:    680ms;
+
+  /* metrics */
+  --measure: 68ch;
+  --gutter: 28px;
+  --radius: 10px;
+  --radius-sm: 6px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bone:        #121614;
+    --surface:     #181E1B;
+    --surface-2:   #1D2421;
+    --surface-3:   #232B27;
+
+    --ink:         #E7ECE8;
+    --ink-2:       #C4CEC8;
+    --ink-3:       #A3B0A9;
+    --muted:       #8A988F;
+    --faint:       #6E7C74;
+
+    --rule:        #29312D;
+    --rule-2:      #212824;
+
+    --sage:        #7FB3A0;
+    --sage-deep:   #96C4B2;
+    --sage-soft:   #182A24;
+    --sage-line:   #2E4C41;
+
+    --ochre:       #C4A163;
+    --ochre-soft:  #26200F;
+    --ochre-line:  #443A20;
+
+    --grounded:    #7FB3A0;
+    --caution:     #C4A163;
+    --alert:       #D08A82;
+    --alert-soft:  #2B1B19;
+
+    --lift-1: 0 1px 2px rgba(0, 0, 0, .3);
+    --lift-2: 0 1px 3px rgba(0, 0, 0, .35), 0 8px 24px -14px rgba(0, 0, 0, .6);
+    --lift-3: 0 2px 6px rgba(0, 0, 0, .4), 0 20px 48px -20px rgba(0, 0, 0, .7);
+  }
+}
+
+[data-theme='dark'] {
+  --bone:        #121614;
+  --surface:     #181E1B;
+  --surface-2:   #1D2421;
+  --surface-3:   #232B27;
+
+  --ink:         #E7ECE8;
+  --ink-2:       #C4CEC8;
+  --ink-3:       #A3B0A9;
+  --muted:       #8A988F;
+  --faint:       #6E7C74;
+
+  --rule:        #29312D;
+  --rule-2:      #212824;
+
+  --sage:        #7FB3A0;
+  --sage-deep:   #96C4B2;
+  --sage-soft:   #182A24;
+  --sage-line:   #2E4C41;
+
+  --ochre:       #C4A163;
+  --ochre-soft:  #26200F;
+  --ochre-line:  #443A20;
+
+  --grounded:    #7FB3A0;
+  --caution:     #C4A163;
+  --alert:       #D08A82;
+  --alert-soft:  #2B1B19;
+
+  --lift-1: 0 1px 2px rgba(0, 0, 0, .3);
+  --lift-2: 0 1px 3px rgba(0, 0, 0, .35), 0 8px 24px -14px rgba(0, 0, 0, .6);
+  --lift-3: 0 2px 6px rgba(0, 0, 0, .4), 0 20px 48px -20px rgba(0, 0, 0, .7);
+}
