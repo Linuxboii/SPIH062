@@ -1,6 +1,6 @@
 import { lazy, Suspense, useEffect } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
-import { DisclaimerBar, Nav, Footer } from './components/Shell'
+import { DisclaimerBar, Nav, Footer, SkipLink } from './components/Shell'
 import Landing from './pages/Landing'
 
 /* Landing is eager — it is the entry point and must paint immediately.
@@ -31,10 +31,11 @@ function RouteFallback() {
 export default function App() {
   return (
     <>
+      <SkipLink />
       <DisclaimerBar />
       <Nav />
       <ScrollToTop />
-      <main id="main">
+      <main id="main" tabIndex={-1}>
         <Suspense fallback={<RouteFallback />}>
           <Routes>
             <Route path="/" element={<Landing />} />

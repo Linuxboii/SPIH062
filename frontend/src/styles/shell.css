@@ -1,3 +1,22 @@
+/* ── skip link ────────────────────────────────────────────── */
+.skip-link {
+  position: fixed;
+  top: var(--s-2);
+  left: var(--s-2);
+  z-index: 200;
+  padding: 10px var(--s-4);
+  background: var(--surface);
+  color: var(--ink);
+  border: 1px solid var(--sage);
+  border-radius: var(--radius-sm);
+  box-shadow: var(--lift-2);
+  font-size: 13.5px;
+  font-weight: 500;
+  transform: translateY(calc(-100% - var(--s-4)));
+  transition: transform var(--t-fast) var(--ease);
+}
+.skip-link:focus-visible { transform: none; text-decoration: none; }
+
 /* ── disclaimer ───────────────────────────────────────────── */
 .disclaimer {
   position: sticky;
@@ -6,15 +25,17 @@
   background: var(--ink);
   color: var(--bone);
 }
-[data-theme='dark'] .disclaimer,
-:root:not([data-theme='light']) .disclaimer { background: var(--surface-3); }
+:root[data-theme='dark'] .disclaimer {
+  background: var(--surface-3);
+  border-bottom: 1px solid var(--rule);
+}
 
 .disclaimer-inner {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 11px;
   min-height: 34px;
-  padding-block: 6px;
+  padding-block: 7px;
 }
 
 .disclaimer-mark {
@@ -22,47 +43,55 @@
   border-radius: 50%;
   background: var(--sage);
   flex: none;
+  /* centre the dot on the first line of text rather than on the box,
+     so it stays put when the sentence wraps to two lines */
+  margin-top: 7px;
 }
-[data-theme='dark'] .disclaimer-mark,
-:root:not([data-theme='light']) .disclaimer-mark { background: var(--sage); }
+:root[data-theme='dark'] .disclaimer-mark { background: var(--sage); }
 
 .disclaimer p {
   font-size: 12px;
   letter-spacing: .01em;
-  line-height: 1.4;
+  line-height: 1.45;
+  /* 82% of bone on ink is still 11:1 — safe, and keeps the bar quiet */
   color: color-mix(in srgb, var(--bone) 82%, transparent);
 }
-[data-theme='dark'] .disclaimer p,
-:root:not([data-theme='light']) .disclaimer p { color: var(--ink-2); }
+:root[data-theme='dark'] .disclaimer p { color: var(--ink-2); }
 
 .disclaimer strong { font-weight: 600; color: var(--bone); }
-[data-theme='dark'] .disclaimer strong,
-:root:not([data-theme='light']) .disclaimer strong { color: var(--ink); }
+:root[data-theme='dark'] .disclaimer strong { color: var(--ink); }
 
 /* ── nav ──────────────────────────────────────────────────── */
 .nav {
   position: sticky;
-  top: 34px;
+  /* was a hardcoded 34px, which broke the moment the disclaimer wrapped */
+  top: var(--disclaimer-h);
   z-index: 50;
-  background: color-mix(in srgb, var(--bone) 82%, transparent);
-  backdrop-filter: saturate(1.4) blur(12px);
-  -webkit-backdrop-filter: saturate(1.4) blur(12px);
+  background: color-mix(in srgb, var(--bone) 80%, transparent);
+  backdrop-filter: saturate(1.4) blur(14px);
+  -webkit-backdrop-filter: saturate(1.4) blur(14px);
   border-bottom: 1px solid transparent;
   transition:
     border-color var(--t-base) var(--ease),
-    background var(--t-base) var(--ease);
+    background var(--t-base) var(--ease),
+    box-shadow var(--t-base) var(--ease);
 }
 .nav.is-lifted {
   border-bottom-color: var(--rule);
-  background: color-mix(in srgb, var(--bone) 93%, transparent);
+  background: color-mix(in srgb, var(--bone) 94%, transparent);
+  box-shadow: var(--lift-1);
+}
+/* backdrop-filter is unreliable in a few engines; fall back to opaque */
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .nav { background: var(--bone); }
 }
 
 .nav-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 24px;
-  height: 62px;
+  gap: var(--s-6);
+  height: var(--nav-h);
 }
 
 .wordmark {
@@ -83,17 +112,19 @@
 
 .nav-links {
   display: none;
-  gap: 28px;
+  gap: var(--s-6);
   margin-inline: auto;
 }
-@media (min-width: 880px) { .nav-links { display: flex; } }
+/* raised from 880px: the theme toggle takes width out of this row, and
+   below this the links would crowd the wordmark before they wrapped */
+@media (min-width: 920px) { .nav-links { display: flex; gap: 28px; } }
 
 .nav-links a {
   font-size: 13.5px;
   color: var(--muted);
   text-decoration: none;
   position: relative;
-  padding-block: 4px;
+  padding-block: var(--s-1);
   transition: color var(--t-fast) var(--ease);
 }
 .nav-links a::after {
@@ -109,8 +140,62 @@
 .nav-links a.active::after { width: 100%; }
 .nav-links a.active { color: var(--ink); }
 
-.nav-actions { flex: none; }
-.nav-cta { height: 36px; padding-inline: 16px; font-size: 13.5px; }
+.nav-actions {
+  flex: none;
+  display: flex;
+  align-items: center;
+  /* ≥8px between adjacent targets (Material/HIG touch spacing) */
+  gap: var(--s-2);
+}
+.nav-cta { min-height: 38px; padding-inline: var(--s-4); font-size: 13.5px; }
+
+/* ── theme toggle ─────────────────────────────────────────── */
+.theme-toggle {
+  /* 40px visual, 44px effective target via the ::before hit area */
+  position: relative;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  color: var(--ink-3);
+  cursor: pointer;
+  flex: none;
+  transition:
+    background var(--t-fast) var(--ease),
+    border-color var(--t-fast) var(--ease),
+    color var(--t-fast) var(--ease);
+}
+/* 40px visual + 2px bleed each side = a 44px hit target without a
+   44px box crowding the nav row */
+.theme-toggle::before {
+  content: '';
+  position: absolute;
+  inset: -2px;
+}
+.theme-toggle:hover {
+  background: var(--surface-2);
+  border-color: var(--sage);
+  color: var(--ink);
+}
+.theme-toggle svg { width: 17px; height: 17px; }
+
+/* the glyph is keyed on the preference, so React remounts it and this
+   plays on every change — 180ms, meaning "the setting moved" */
+.theme-toggle-glyph {
+  display: grid;
+  place-items: center;
+  animation: glyph-in var(--t-fast) var(--ease-out);
+}
+@keyframes glyph-in {
+  from { opacity: 0; transform: rotate(-35deg) scale(.82); }
+  to   { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .theme-toggle-glyph { animation: none; }
+}
 
 /* ── footer ───────────────────────────────────────────────── */
 .foot {
@@ -122,11 +207,11 @@
 .foot-inner {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 40px;
-  padding-bottom: 44px;
+  gap: var(--s-8);
+  padding-bottom: var(--s-8);
 }
 @media (min-width: 780px) {
-  .foot-inner { grid-template-columns: 1.4fr 1fr; }
+  .foot-inner { grid-template-columns: 1.4fr 1fr; gap: var(--s-9); }
 }
 
 .foot-tag {
@@ -139,26 +224,30 @@
 
 .foot-cols {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 32px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-7);
 }
 .foot-cols .label { display: block; margin-bottom: 14px; }
-.foot-cols ul { display: flex; flex-direction: column; gap: 9px; }
+.foot-cols ul { display: flex; flex-direction: column; gap: var(--s-2); }
 .foot-cols a {
+  display: inline-block;
   font-size: 13.5px;
   color: var(--ink-2);
   text-decoration: none;
+  /* 8px of vertical padding gives these a usable tap height without
+     changing how the column reads */
+  padding-block: 3px;
   transition: color var(--t-fast) var(--ease);
 }
-.foot-cols a:hover { color: var(--sage); text-decoration: none; }
+.foot-cols a:hover { color: var(--sage-ink); text-decoration: none; }
 
 .foot-legal {
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
   justify-content: space-between;
-  gap: 12px 24px;
-  padding-block: 22px 30px;
+  gap: var(--s-3) var(--s-6);
+  padding-block: var(--s-6) var(--s-7);
   border-top: 1px solid var(--rule);
 }
 .foot-legal p {
@@ -168,3 +257,13 @@
   max-width: 78ch;
 }
 .foot-meta { letter-spacing: .1em; font-size: 11px; }
+
+/* On touch, the text links in the footer and the nav rail need a real
+   target. Padding on an inline/inline-block element grows the hit area
+   without changing the line rhythm, so the desktop layout is untouched. */
+@media (pointer: coarse) {
+  .foot-cols ul { gap: var(--s-3); }
+  .foot-cols a { padding-block: var(--s-3); }   /* 22px line + 24px = 46 */
+  .nav-links a { padding-block: var(--s-3); }
+  .wordmark { min-height: 44px; }
+}

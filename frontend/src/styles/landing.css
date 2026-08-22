@@ -2,7 +2,9 @@
 .hero {
   position: relative;
   isolation: isolate;
-  padding: clamp(96px, 15vh, 172px) 0 clamp(76px, 11vh, 124px);
+  /* svh, not vh: on mobile the URL bar collapse used to shove the whole
+     hero up mid-scroll */
+  padding: clamp(88px, 14svh, 168px) 0 clamp(72px, 10svh, 120px);
   border-bottom: 1px solid var(--rule);
   overflow: hidden;
 }
@@ -21,25 +23,25 @@
   inset: 0;
   z-index: -1;
   background:
-    radial-gradient(120% 78% at 22% 42%, var(--bone) 34%, transparent 78%),
+    radial-gradient(120% 78% at 22% 42%, var(--bone) 36%, transparent 78%),
     linear-gradient(to bottom, transparent 55%, var(--bone) 100%);
 }
 
 .hero-inner { position: relative; }
-.hero-eyebrow { margin-bottom: 26px; }
+.hero-eyebrow { margin-bottom: var(--s-6); }
 
 .hero-title {
-  margin-bottom: 28px;
+  margin-bottom: var(--s-7);
   max-width: 15ch;
 }
 
-.hero-lede { margin-bottom: 40px; }
+.hero-lede { margin-bottom: var(--s-8); }
 
 .hero-actions {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
-  margin-bottom: 44px;
+  gap: var(--s-3);
+  margin-bottom: var(--s-8);
 }
 
 .hero-foot {
@@ -50,20 +52,22 @@
 }
 
 /* ── section frame ────────────────────────────────────────── */
-.section { padding: clamp(72px, 10vw, 118px) 0; }
+.section { padding: var(--sec-pad) 0; }
 .section-tint {
   background: var(--surface-2);
   border-block: 1px solid var(--rule);
 }
+/* two tinted sections in a row would double up their shared border */
+.section-tint + .section-tint { border-top: 0; }
 
-.sec-head { margin-bottom: clamp(40px, 6vw, 64px); max-width: 62ch; }
-.sec-head .eyebrow { margin-bottom: 16px; }
+.sec-head { margin-bottom: clamp(36px, 5.5vw, 60px); max-width: 62ch; }
+.sec-head .eyebrow { margin-bottom: var(--s-4); }
 .sec-head .h2 { margin-bottom: 18px; }
 .sec-dek { font-size: 15.5px; color: var(--muted); }
 .sec-dek + .sec-dek { margin-top: 14px; }
 
 /* ── premise ──────────────────────────────────────────────── */
-.section-premise { padding-block: clamp(64px, 9vw, 104px); }
+.section-premise { padding-block: clamp(56px, 8vw, 96px); }
 .premise {
   font-size: clamp(1.32rem, 2.9vw, 2rem);
   font-weight: 300;
@@ -83,7 +87,7 @@
 .contrast-row {
   display: grid;
   grid-template-columns: 0.8fr 1.1fr 1.1fr;
-  gap: 24px;
+  gap: var(--s-6);
   align-items: start;
 }
 
@@ -91,14 +95,17 @@
   padding: 14px 0;
   border-bottom: 1px solid var(--rule);
 }
-.label-sage { color: var(--sage); }
+.label-sage { color: var(--sage-ink); }
 
 .contrast-row {
-  padding: 22px 0;
+  padding: var(--s-6) 0;
   border-bottom: 1px solid var(--rule-2);
   transition: background var(--t-base) var(--ease);
 }
+/* the hover tint has to differ from whatever surface the row sits on,
+   or the whole row-highlight silently disappears inside a tinted section */
 .contrast-row:hover { background: var(--surface-2); }
+.section-tint .contrast-row:hover { background: var(--surface); }
 
 .contrast-concern {
   font-weight: 600;
@@ -113,14 +120,17 @@
   font-size: 14.5px;
   color: var(--ink-2);
   padding-left: 18px;
-  border-left: 2px solid var(--sage-line);
+  border-left: 2px solid var(--sage);
 }
 
-@media (max-width: 760px) {
+/* the three columns stop fitting well before the 760px this used to
+   collapse at — 14.5px copy in a 0.8fr column is unreadable by ~900px */
+@media (max-width: 900px) {
   .contrast-head { display: none; }
   .contrast-row {
     grid-template-columns: 1fr;
-    gap: 8px;
+    gap: var(--s-2);
+    padding-block: var(--s-5);
   }
   .contrast-was::before {
     content: 'Chatbot — ';
@@ -137,20 +147,20 @@
 .prov-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(40px, 6vw, 68px);
+  gap: clamp(36px, 5.5vw, 64px);
   align-items: center;
 }
 @media (min-width: 940px) {
   .prov-grid { grid-template-columns: 0.95fr 1.05fr; }
 }
 
-.prov-copy .eyebrow { margin-bottom: 16px; }
-.prov-copy .h2 { margin-bottom: 20px; }
+.prov-copy .eyebrow { margin-bottom: var(--s-4); }
+.prov-copy .h2 { margin-bottom: var(--s-5); }
 
 .prov-demo {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: var(--s-3);
 }
 
 .claim {
@@ -158,7 +168,7 @@
   border: 1px solid var(--rule);
   border-left-width: 3px;
   border-radius: 0 var(--radius) var(--radius) 0;
-  padding: 16px 20px;
+  padding: var(--s-4) var(--s-5);
   box-shadow: var(--lift-1);
   transition: box-shadow var(--t-base) var(--ease), transform var(--t-base) var(--ease);
 }
@@ -177,20 +187,23 @@
   margin-bottom: 9px;
 }
 
-
 .claim-grounded { border-left-color: var(--sage); }
-.claim-grounded .claim-tag { color: var(--sage); }
+.claim-grounded .claim-tag { color: var(--sage-ink); }
 
 .claim-inferred {
   border-left-color: var(--ochre);
   background: var(--ochre-soft);
+  border-color: var(--ochre-line);
+  border-left-color: var(--ochre);
 }
-.claim-inferred .claim-tag { color: var(--ochre); }
+.claim-inferred .claim-tag { color: var(--ochre-ink); }
 .claim-inferred p { font-style: italic; }
 
 .claim-stripped {
   border-left-color: var(--alert);
   background: var(--alert-soft);
+  border-color: var(--alert-line);
+  border-left-color: var(--alert);
 }
 .claim-stripped .claim-tag { color: var(--alert); }
 .claim-stripped s { color: var(--alert); text-decoration-thickness: 1px; }
@@ -205,12 +218,12 @@
   padding: 1px 6px;
   border-radius: 3px;
   background: var(--sage-soft);
-  color: var(--sage-deep);
+  color: var(--sage-ink);
   border: 1px solid var(--sage-line);
   text-decoration: none;
-  transition: background var(--t-fast) var(--ease);
+  transition: background var(--t-fast) var(--ease), border-color var(--t-fast) var(--ease);
 }
-.cite:hover { background: var(--sage-line); text-decoration: none; }
+.cite:hover { background: var(--sage-line); border-color: var(--sage); text-decoration: none; }
 
 /* ── pipeline ─────────────────────────────────────────────── */
 .pipeline {
@@ -224,8 +237,8 @@
 .pipe-step {
   display: grid;
   grid-template-columns: 62px 1fr;
-  gap: 20px;
-  padding: 30px 0;
+  gap: var(--s-5);
+  padding: var(--s-7) 0;
   border-bottom: 1px solid var(--rule-2);
   position: relative;
 }
@@ -242,24 +255,24 @@
 .pipe-n {
   font-size: 11.5px;
   letter-spacing: .1em;
-  color: var(--sage);
+  color: var(--sage-ink);
   padding-top: 6px;
 }
 
-.pipe-title { margin-bottom: 8px; font-weight: 400; }
+.pipe-title { margin-bottom: var(--s-2); font-weight: 400; }
 
 .pipe-text {
   font-size: 15px;
   color: var(--ink-2);
   max-width: 58ch;
-  margin-bottom: 10px;
+  margin-bottom: var(--s-3);
 }
 
 .pipe-aside {
   font-size: 11px;
   letter-spacing: .06em;
   color: var(--faint);
-  padding: 2px 8px;
+  padding: 2px var(--s-2);
   background: var(--surface-2);
   border: 1px solid var(--rule);
   border-radius: 3px;
@@ -268,32 +281,35 @@
 .section-tint .pipe-aside { background: var(--surface); }
 
 @media (min-width: 860px) {
-  .pipeline { grid-template-columns: 1fr 1fr; column-gap: 56px; }
+  .pipeline { grid-template-columns: repeat(2, minmax(0, 1fr)); column-gap: 56px; }
   .pipe-step:nth-child(-n+2) { border-top: 0; }
+  /* the bottom row's rule doubles up with the section edge below it */
+  .pipe-step:nth-last-child(-n+2) { border-bottom: 0; }
+  .pipeline { border-bottom: 1px solid var(--rule); }
 }
 
 /* ── compound preview ─────────────────────────────────────── */
 .cmp-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: clamp(40px, 6vw, 68px);
+  gap: clamp(36px, 5.5vw, 64px);
   align-items: center;
 }
 @media (min-width: 940px) {
   .cmp-grid { grid-template-columns: 1fr 0.9fr; }
 }
 
-.cmp-copy .eyebrow { margin-bottom: 16px; }
-.cmp-copy .h2 { margin-bottom: 20px; }
-.cmp-cta { margin-top: 8px; }
+.cmp-copy .eyebrow { margin-bottom: var(--s-4); }
+.cmp-copy .h2 { margin-bottom: var(--s-5); }
+.cmp-cta { margin-top: var(--s-2); }
 
-.cmp-card { padding: 24px; box-shadow: var(--lift-2); }
+.cmp-card { padding: var(--s-6); box-shadow: var(--lift-2); }
 
 .cmp-card-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 16px;
+  gap: var(--s-4);
   padding-bottom: 18px;
   border-bottom: 1px solid var(--rule);
   margin-bottom: 18px;
@@ -303,50 +319,57 @@
   font-size: 1.45rem;
   font-weight: 400;
   letter-spacing: -.01em;
-  margin-bottom: 4px;
+  margin-bottom: var(--s-1);
 }
 .cmp-ids { font-size: 11px; color: var(--faint); letter-spacing: .04em; }
 
 .cmp-props {
   display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 16px 20px;
-  padding-bottom: 20px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4) var(--s-5);
+  padding-bottom: var(--s-5);
   border-bottom: 1px solid var(--rule);
   margin-bottom: 18px;
 }
-.cmp-props dt { margin-bottom: 4px; }
+.cmp-props dt { margin-bottom: var(--s-1); }
 .cmp-props dd { font-size: 14.5px; color: var(--ink); }
-.cmp-pass { color: var(--sage); }
+.cmp-pass { color: var(--sage-ink); }
 
-.cmp-targets .label { display: block; margin-bottom: 12px; }
+.cmp-targets .label { display: block; margin-bottom: var(--s-3); }
 .cmp-target-row {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  gap: var(--s-3);
   padding: 9px 0;
   border-bottom: 1px solid var(--rule-2);
   font-size: 14px;
   color: var(--ink-2);
 }
-.cmp-target-row:last-child { border-bottom: 0; }
+.cmp-target-row:last-child { border-bottom: 0; padding-bottom: 0; }
 .cmp-target-row .mono { font-size: 12.5px; color: var(--muted); }
 
-/* ── sources ──────────────────────────────────────────────── */
+/* ── sources ──────────────────────────────────────────────────
+   Explicit column counts, all of which divide 4. `auto-fit` used to
+   drop this to three columns around 900px and leave one card stranded
+   on a row of its own. */
 .sources {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(212px, 1fr));
-  gap: 16px;
-  margin-bottom: 40px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4);
+  margin-bottom: var(--s-8);
 }
+@media (max-width: 479px) { .sources { grid-template-columns: 1fr; } }
+@media (min-width: 900px) { .sources { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
-.source { padding: 24px 22px 26px; }
+.source { padding: var(--s-6) 22px 26px; }
 .source-count {
   font-size: 1.7rem;
   font-weight: 400;
   letter-spacing: -.02em;
   color: var(--ink);
   line-height: 1;
+  font-variant-numeric: tabular-nums;
 }
 .source-unit { display: block; margin: 7px 0 18px; }
 .source-name {
@@ -361,8 +384,8 @@
   display: flex;
   flex-wrap: wrap;
   align-items: baseline;
-  gap: 8px 16px;
-  padding-top: 26px;
+  gap: var(--s-2) var(--s-4);
+  padding-top: var(--s-6);
   border-top: 1px solid var(--rule);
 }
 .targets-list {
@@ -372,16 +395,21 @@
   line-height: 1.9;
 }
 
-/* ── commitments ──────────────────────────────────────────── */
+/* ── commitments ──────────────────────────────────────────────
+   The 2px gap over a --rule background is what draws the grid lines,
+   so an orphaned row here exposed bare grey where cells should be.
+   Fixed column counts (1 / 2 / 4) can never orphan four items. */
 .commitments {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(258px, 1fr));
-  gap: 2px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
 }
+@media (max-width: 559px) { .commitments { grid-template-columns: 1fr; } }
+@media (min-width: 1040px) { .commitments { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 
 .commitment {
   background: var(--surface);
@@ -394,8 +422,8 @@
   display: block;
   font-size: 11px;
   letter-spacing: .12em;
-  color: var(--sage);
-  margin-bottom: 16px;
+  color: var(--sage-ink);
+  margin-bottom: var(--s-4);
 }
 .commitment-title {
   font-size: 15px;
@@ -408,13 +436,13 @@
 
 /* ── close ────────────────────────────────────────────────── */
 .section-close {
-  padding-block: clamp(88px, 13vw, 148px);
+  padding-block: clamp(80px, 12vw, 140px);
   text-align: center;
   border-top: 1px solid var(--rule);
 }
 .close-title {
   font-weight: 300;
-  margin-bottom: 10px;
+  margin-bottom: var(--s-3);
   color: var(--ink);
 }
 .close-sub {
@@ -422,7 +450,7 @@
   font-weight: 300;
   font-style: italic;
   color: var(--muted);
-  margin-bottom: 38px;
+  margin-bottom: var(--s-8);
 }
 .close-actions { justify-content: center; margin-bottom: 0; }
 
@@ -433,18 +461,21 @@
   line-height: 1.6;
 }
 
-/* ── model performance ────────────────────────────────────── */
+/* ── model performance ────────────────────────────────────────
+   Same 1px-gap-as-gridlines trick, same orphan fix. */
 .model-strip {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 1px;
   background: var(--rule);
   border: 1px solid var(--rule);
   border-radius: var(--radius);
   overflow: hidden;
-  margin-top: 30px;
+  margin-top: var(--s-7);
 }
-.model-cell { background: var(--surface); padding: 18px 20px; }
+@media (min-width: 760px) { .model-strip { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+
+.model-cell { background: var(--surface); padding: 18px var(--s-5); }
 .section-tint .model-cell { background: var(--bone); }
 .model-v {
   font-family: var(--mono);
@@ -456,7 +487,7 @@
 }
 .model-l {
   display: block;
-  margin-top: 8px;
+  margin-top: var(--s-2);
   font-family: var(--mono);
   font-size: 10.5px;
   letter-spacing: .1em;
@@ -464,7 +495,7 @@
   color: var(--muted);
 }
 .model-caption {
-  margin-top: 16px;
+  margin-top: var(--s-4);
   font-size: 12.5px;
   color: var(--faint);
   line-height: 1.6;

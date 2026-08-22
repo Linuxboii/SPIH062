@@ -2,8 +2,10 @@
   position: fixed;
   inset: 0;
   z-index: 80;
-  background: color-mix(in srgb, var(--ink) 28%, transparent);
-  backdrop-filter: blur(2px);
+  /* 45% is the low end of the HIG/Material scrim range — below this the
+     page behind a sheet keeps competing with it */
+  background: color-mix(in srgb, #000 45%, transparent);
+  backdrop-filter: blur(3px);
   opacity: 0;
   pointer-events: none;
   transition: opacity var(--t-base) var(--ease);
@@ -13,10 +15,12 @@
 .drawer {
   position: fixed;
   top: 0;
+  padding-bottom: env(safe-area-inset-bottom);
   right: 0;
   bottom: 0;
   z-index: 90;
   width: min(460px, 100vw);
+  max-width: 100%;
   background: var(--surface);
   border-left: 1px solid var(--rule);
   box-shadow: var(--lift-3);
@@ -42,21 +46,24 @@
   flex: none;
 }
 .drawer-head > div { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-.drawer-id { font-size: 11.5px; letter-spacing: .05em; color: var(--sage); }
+.drawer-id { font-size: 11.5px; letter-spacing: .05em; color: var(--sage-ink); }
 .drawer-kind { text-transform: uppercase; }
 
 .drawer-close {
   background: transparent;
-  border: 1px solid var(--rule);
+  border: 1px solid var(--rule-strong);
   border-radius: var(--radius-sm);
-  width: 30px; height: 30px;
+  /* 36px visual with a -4px hit area = 44px effective target */
+  width: 36px; height: 36px;
+  position: relative;
   display: grid; place-items: center;
   color: var(--muted);
   cursor: pointer;
   flex: none;
   transition: background var(--t-fast) var(--ease), color var(--t-fast) var(--ease);
 }
-.drawer-close:hover { background: var(--surface-3); color: var(--ink); }
+.drawer-close::before { content: ''; position: absolute; inset: -4px; }
+.drawer-close:hover { background: var(--surface-3); color: var(--ink); border-color: var(--sage); }
 
 .drawer-body { padding: 24px 20px 32px; overflow-y: auto; }
 
@@ -109,7 +116,8 @@
   line-height: 1.62;
   color: var(--ink-2);
   padding-left: 16px;
-  border-left: 2px solid var(--sage-line);
+  border-left: 2px solid var(--sage);
 }
 
 .drawer-link { width: 100%; }
+.drawer-body { overscroll-behavior: contain; }

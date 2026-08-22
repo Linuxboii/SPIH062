@@ -15,11 +15,16 @@ function lipinski(c) {
   ]
 }
 
-function Panel({ title, chip, children, note }) {
+function Panel({ title, chip, children, note, count }) {
   return (
     <section className="panel card">
       <header className="panel-head">
-        <h2 className="panel-title">{title}</h2>
+        <h2 className="panel-title">
+          {title}
+          {/* the list below may be scrolling inside the card, so say how
+              much is in it rather than letting the scrollbar imply it */}
+          {count > 0 && <span className="panel-count mono">{count}</span>}
+        </h2>
         {chip}
       </header>
       {note && <p className="panel-note">{note}</p>}
@@ -166,6 +171,7 @@ export default function Compound() {
           <div className="cmp-col">
             <Panel
               title="Measured targets"
+              count={c.activities?.length}
               chip={<span className="chip chip-sage">Experimental</span>}
               note="Bioactivities measured in assays and reported in ChEMBL."
             >
@@ -199,6 +205,7 @@ export default function Compound() {
 
             <Panel
               title="Predicted targets"
+              count={c.predictions?.length}
               chip={<span className="chip chip-ochre">Predicted — not experimental</span>}
               note="Model output, not measurement. Probabilities are calibrated on a held-out scaffold split; per-target performance is shown alongside each prediction."
             >
@@ -229,7 +236,9 @@ export default function Compound() {
               )}
             </Panel>
 
-            <Panel title="Clinical trials" chip={<span className="chip chip-sage">ClinicalTrials.gov</span>}>
+            <Panel
+              count={c.trials?.length}
+              title="Clinical trials" chip={<span className="chip chip-sage">ClinicalTrials.gov</span>}>
               {c.trials?.length ? (
                 <ul className="trials" role="list">
                   {c.trials.map((t) => (
@@ -252,7 +261,9 @@ export default function Compound() {
               )}
             </Panel>
 
-            <Panel title="Recent literature" chip={<span className="chip chip-sage">PubMed</span>}>
+            <Panel
+              count={c.papers?.length}
+              title="Recent literature" chip={<span className="chip chip-sage">PubMed</span>}>
               {c.papers?.length ? (
                 <ul className="papers" role="list">
                   {c.papers.map((p) => (

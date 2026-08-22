@@ -8,6 +8,32 @@
       name="description"
       content="A grounded biomedical research assistant for oncology drug discovery. Every claim traceable to real retrieved data."
     />
+
+    <!-- Resolve the theme before first paint. Without this the page
+         renders light, then repaints dark once React mounts. Must stay
+         in sync with the KEY and ORDER in src/lib/theme.js. -->
+    <script>
+      (function () {
+        try {
+          var p = localStorage.getItem('oncolens-theme');
+          if (p !== 'light' && p !== 'dark' && p !== 'system') p = 'system';
+          var dark =
+            p === 'dark' ||
+            (p === 'system' &&
+              window.matchMedia('(prefers-color-scheme: dark)').matches);
+          var r = document.documentElement;
+          r.dataset.theme = dark ? 'dark' : 'light';
+          r.dataset.themePref = p;
+        } catch (e) {
+          document.documentElement.dataset.theme = 'light';
+        }
+      })();
+    </script>
+
+    <!-- mobile browser chrome follows the theme -->
+    <meta name="theme-color" content="#FAFAF7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#101413" media="(prefers-color-scheme: dark)" />
+
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link

@@ -1,11 +1,38 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Link, NavLink, useLocation } from 'react-router-dom'
+import ThemeToggle from './ThemeToggle'
 import '../styles/shell.css'
 
-/* Non-dismissible. Required by the product's positioning, not a cookie banner. */
+/* Non-dismissible. Required by the product's positioning, not a cookie banner.
+ *
+ * Its height is published to CSS as --disclaimer-h. The bar wraps to two or
+ * three lines on narrow screens, and everything sticky below it (the nav, the
+ * evidence panel, anchor scroll-padding) used to hardcode 34px — so on a phone
+ * the nav stuck at the wrong offset and sat on top of this text. */
 export function DisclaimerBar() {
+  const ref = useRef(null)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+
+    const publish = () => {
+      const h = Math.round(el.getBoundingClientRect().height)
+      if (h > 0) document.documentElement.style.setProperty('--disclaimer-h', `${h}px`)
+    }
+    publish()
+
+    if (!('ResizeObserver' in window)) {
+      window.addEventListener('resize', publish)
+      return () => window.removeEventListener('resize', publish)
+    }
+    const ro = new ResizeObserver(publish)
+    ro.observe(el)
+    return () => ro.disconnect()
+  }, [])
+
   return (
-    <div className="disclaimer" role="note">
+    <div className="disclaimer" role="note" ref={ref}>
       <div className="shell disclaimer-inner">
         <span className="disclaimer-mark" aria-hidden="true" />
         <p>
@@ -15,6 +42,10 @@ export function DisclaimerBar() {
       </div>
     </div>
   )
+}
+
+export function SkipLink() {
+  return <a className="skip-link" href="#main">Skip to content</a>
 }
 
 function Wordmark() {
@@ -64,6 +95,7 @@ export function Nav() {
         )}
 
         <div className="nav-actions">
+          <ThemeToggle />
           {onLanding ? (
             <Link className="btn btn-primary nav-cta" to="/app">Open assistant</Link>
           ) : (

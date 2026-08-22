@@ -1,5 +1,5 @@
-.compound { padding-bottom: 72px; }
-.cmp-loading { padding-block: 18vh; display: grid; place-items: center; }
+.compound { padding-bottom: var(--s-9); }
+.cmp-loading { padding-block: 18svh; display: grid; place-items: center; }
 
 /* ── header ───────────────────────────────────────────────── */
 .cmp-header {
@@ -7,8 +7,8 @@
   flex-wrap: wrap;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 20px;
-  padding-block: 44px 34px;
+  gap: var(--s-5);
+  padding-block: var(--s-8) var(--s-7);
   border-bottom: 1px solid var(--rule);
   margin-bottom: 32px;
 }
@@ -39,16 +39,47 @@
 .cmp-layout {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 20px;
-  align-items: start;
+  gap: var(--s-5);
+  /* stretch, not start: the two columns hold different numbers of panels,
+     and with `start` the shorter one ended in a block of dead space */
+  align-items: stretch;
 }
 @media (min-width: 980px) {
   .cmp-layout { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-.cmp-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.cmp-col {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-5);
+  min-width: 0;
+}
+/* With the long panels bounded, the left column (structure, properties,
+   Ro5) is now shorter than the viewport on a normal desktop — so pin it.
+   The molecule stays in view while the activity and trial data scroll
+   past it, and the leftover space stops reading as a hole in the page.
+   Guarded on height: where it would not fit, it just scrolls normally. */
+@media (min-width: 980px) and (min-height: 900px) {
+  .cmp-col:first-child {
+    position: sticky;
+    top: calc(var(--chrome-h) + var(--s-5));
+    align-self: start;
+  }
+}
+
+/* No panel is stretched to close the gap between the two columns —
+   stretching "Lipinski Rule of Five" to match a 40-row activity table
+   just makes one enormous empty card. The imbalance is fixed at its
+   source instead, by bounding the panels that can run unbounded
+   (see --panel-cap below). */
 
 /* ── panel ────────────────────────────────────────────────── */
-.panel { padding: 20px 22px 22px; }
+.panel {
+  --panel-pad: 22px;
+  padding: var(--s-5) var(--panel-pad) var(--panel-pad);
+  display: flex;
+  flex-direction: column;
+}
+.panel-body { flex: 1 1 auto; }
 .panel-head {
   display: flex;
   align-items: center;
@@ -71,6 +102,8 @@
 /* ── molecule ─────────────────────────────────────────────── */
 .mol-wrap {
   background: var(--surface-2);
+  display: grid;
+  place-items: center;
   border: 1px solid var(--rule);
   border-radius: var(--radius-sm);
   padding: 8px;
@@ -101,9 +134,10 @@
 /* ── properties ───────────────────────────────────────────── */
 .props {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(118px, 1fr));
-  gap: 16px 18px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-4) 18px;
 }
+@media (min-width: 560px) { .props { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
 .props dt { margin-bottom: 4px; }
 .props dd { font-size: 14.5px; color: var(--ink); }
 
@@ -127,13 +161,52 @@
   font-size: 10px;
   font-weight: 700;
 }
-.is-pass .ro5-mark { background: var(--sage-soft); color: var(--sage); }
-.is-fail .ro5-mark { background: var(--ochre-soft); color: var(--ochre); }
+.is-pass .ro5-mark { background: var(--sage-soft); color: var(--sage-ink); }
+.is-fail .ro5-mark { background: var(--ochre-soft); color: var(--ochre-ink); }
 .ro5-rule { color: var(--ink-2); }
 .ro5-val { font-size: 12.5px; color: var(--muted); }
 
+/* ── bounded panels ───────────────────────────────────────────
+   Osimertinib has 40 measured activities and 11 trials. Rendered in
+   full these made the right column ~4,000px taller than the left, which
+   is what read as the page "trailing off". Each unbounded region now
+   scrolls inside its own card, so both columns stay comparable and the
+   panels can actually be compared side by side. */
+.panel { --panel-cap: 380px; }
+
+.tscroll,
+.trials,
+.papers,
+.preds {
+  max-height: var(--panel-cap);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+.trials, .papers, .preds { padding-right: var(--s-2); }
+
+/* the header has to survive the scroll or the columns lose their meaning */
+.dtable thead th {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  background: var(--surface);
+  box-shadow: inset 0 -1px 0 var(--rule);
+}
+
+.panel-count {
+  font-size: 11px;
+  color: var(--faint);
+  font-variant-numeric: tabular-nums;
+  margin-left: var(--s-2);
+}
+
 /* ── tables ───────────────────────────────────────────────── */
-.tscroll { overflow-x: auto; margin-inline: -22px; padding-inline: 22px; }
+.tscroll {
+  overflow-x: auto;
+  margin-inline: calc(var(--panel-pad) * -1);
+  padding-inline: var(--panel-pad);
+  overscroll-behavior-x: contain;
+}
 .dtable { border-collapse: collapse; width: 100%; font-size: 13px; min-width: 380px; }
 .dtable th, .dtable td {
   text-align: left;
@@ -152,6 +225,8 @@
 .dtable td { color: var(--ink-2); }
 .dtable tbody tr:last-child td { border-bottom: 0; }
 .dtable .num { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; padding-right: 0; }
+.dtable tbody tr { transition: background var(--t-fast) var(--ease); }
+.dtable tbody tr:hover { background: var(--surface-2); }
 
 /* ── predictions ──────────────────────────────────────────── */
 .preds { display: flex; flex-direction: column; gap: 16px; }
@@ -165,7 +240,7 @@
   margin-bottom: 8px;
 }
 .pred-target { font-size: 14px; font-weight: 500; color: var(--ink); }
-.pred-p { font-size: 13px; color: var(--ochre); }
+.pred-p { font-size: 13px; color: var(--ochre-ink); font-variant-numeric: tabular-nums; }
 
 .pred-track {
   height: 3px;
@@ -190,7 +265,11 @@
 .trial:last-child, .paper:last-child { border-bottom: 0; padding-bottom: 0; }
 
 .trial-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 6px; }
-.trial-id { font-size: 11.5px; color: var(--sage); }
+.trial-id {
+  display: inline-block;
+  font-size: 11.5px;
+  color: var(--sage-ink);
+}
 .trial-title { font-size: 13.5px; color: var(--ink-2); line-height: 1.45; margin-bottom: 5px; }
 .trial-meta { font-size: 10.5px; color: var(--faint); }
 
@@ -202,5 +281,10 @@
   margin-bottom: 5px;
   text-decoration: none;
 }
-.paper-title:hover { color: var(--sage); text-decoration: underline; text-underline-offset: 3px; }
+.paper-title:hover { color: var(--sage-ink); text-decoration: underline; text-underline-offset: 3px; }
 .paper-meta { font-size: 10.5px; color: var(--faint); }
+
+@media (pointer: coarse) {
+  .trial-id { padding-block: var(--s-4); }
+  .paper-title { padding-block: var(--s-2); }
+}

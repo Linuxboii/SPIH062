@@ -28,9 +28,13 @@ export default function MoleculeField() {
 
     const readInk = () => {
       const cs = getComputedStyle(document.documentElement)
+      const sage = cs.getPropertyValue('--sage').trim() || '#4F8271'
       return {
-        node: cs.getPropertyValue('--sage').trim() || '#4F8271',
-        line: cs.getPropertyValue('--sage').trim() || '#4F8271',
+        node: sage,
+        line: sage,
+        // the field needs more alpha on a near-black ground to read at all
+        nodeA: parseFloat(cs.getPropertyValue('--field-node-a')) || 0.3,
+        lineA: parseFloat(cs.getPropertyValue('--field-line-a')) || 0.16,
       }
     }
     let ink = readInk()
@@ -67,7 +71,7 @@ export default function MoleculeField() {
           const dy = a.y - b.y
           const d = Math.hypot(dx, dy)
           if (d > LINK_DIST) continue
-          const alpha = (1 - d / LINK_DIST) * 0.16
+          const alpha = (1 - d / LINK_DIST) * ink.lineA
           ctx.strokeStyle = ink.line
           ctx.globalAlpha = alpha
           ctx.lineWidth = 0.7
@@ -78,7 +82,7 @@ export default function MoleculeField() {
         }
       }
 
-      ctx.globalAlpha = 0.3
+      ctx.globalAlpha = ink.nodeA
       ctx.fillStyle = ink.node
       for (const n of nodes) {
         ctx.beginPath()
@@ -129,15 +133,24 @@ export default function MoleculeField() {
     })
     io.observe(canvas)
 
-    const themeWatcher = window.matchMedia('(prefers-color-scheme: dark)')
-    const onTheme = () => { ink = readInk() }
-    themeWatcher.addEventListener?.('change', onTheme)
+    /* The theme toggle rewrites <html data-theme> without the OS
+       preference changing, so watching the media query alone left the
+       field painted in the previous theme's sage. */
+    const onTheme = () => {
+      ink = readInk()
+      if (reduced || !running) draw()
+    }
+    const themeObserver = new MutationObserver(onTheme)
+    themeObserver.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ['data-theme'],
+    })
 
     return () => {
       running = false
       cancelAnimationFrame(raf)
       window.removeEventListener('resize', onResize)
-      themeWatcher.removeEventListener?.('change', onTheme)
+      themeObserver.disconnect()
       io.disconnect()
     }
   }, [])

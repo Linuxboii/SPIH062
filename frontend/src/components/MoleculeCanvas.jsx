@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import SmilesDrawer from 'smiles-drawer'
+import { useResolvedTheme } from '../lib/theme'
 
 /**
  * 2D structure depiction, rendered in the browser from SMILES.
@@ -9,6 +10,9 @@ import SmilesDrawer from 'smiles-drawer'
 export default function MoleculeCanvas({ smiles, height = 260 }) {
   const canvasRef = useRef(null)
   const [failed, setFailed] = useState(false)
+  /* structure is painted to a canvas, so it has to be redrawn — not
+     restyled — when the theme flips */
+  const resolvedTheme = useResolvedTheme()
 
   useEffect(() => {
     if (!smiles || !canvasRef.current) return
@@ -19,7 +23,7 @@ export default function MoleculeCanvas({ smiles, height = 260 }) {
     const sage = cs.getPropertyValue('--sage').trim() || '#4F8271'
 
     // Muted, single-hue theme — a rainbow element palette would fight the page.
-    const theme = {
+    const palette = {
       C: ink, N: sage, O: sage, F: sage, CL: sage, BR: sage, I: sage,
       P: sage, S: sage, B: sage, SI: sage, H: ink, BACKGROUND: 'transparent',
     }
@@ -33,7 +37,7 @@ export default function MoleculeCanvas({ smiles, height = 260 }) {
       fontSizeLarge: 6,
       fontSizeSmall: 4,
       padding: 18,
-      themes: { oncolens: theme },
+      themes: { oncolens: palette },
     })
 
     try {
@@ -51,7 +55,7 @@ export default function MoleculeCanvas({ smiles, height = 260 }) {
     } catch {
       setFailed(true)
     }
-  }, [smiles, height])
+  }, [smiles, height, resolvedTheme])
 
   if (!smiles) {
     return <div className="mol-empty">No structure on record.</div>
