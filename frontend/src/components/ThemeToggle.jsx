@@ -22,35 +22,25 @@ function MoonIcon() {
   )
 }
 
-function SystemIcon() {
-  return (
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5"
-      strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <rect x="3" y="4" width="18" height="12.5" rx="1.6" />
-      <path d="M8.5 20.5h7M12 16.5v4" />
-    </svg>
-  )
-}
-
-const ICON = { system: SystemIcon, light: SunIcon, dark: MoonIcon }
-const NEXT = { system: 'light', light: 'dark', dark: 'system' }
-const SAYS = { system: 'match the system', light: 'light', dark: 'dark' }
-
+/* Two states, two icons. The glyph shows the theme you are looking at;
+   the label says what pressing it does. There is deliberately no
+   "system" position — see the note in lib/theme.js. */
 export default function ThemeToggle() {
-  const { pref, resolved, cycle } = useTheme()
-  const Icon = ICON[pref]
+  const { resolved, toggle } = useTheme()
+  const dark = resolved === 'dark'
+  const Icon = dark ? MoonIcon : SunIcon
+  const next = dark ? 'light' : 'dark'
 
   return (
     <button
       type="button"
       className="theme-toggle"
-      onClick={cycle}
-      /* Announce the current state AND what the press will do — an
-         icon-only control with no label is unusable on a screen reader. */
-      aria-label={`Theme: ${SAYS[pref]}${pref === 'system' ? ` (currently ${resolved})` : ''}. Switch to ${SAYS[NEXT[pref]]}.`}
-      title={`Theme: ${SAYS[pref]}`}
+      onClick={toggle}
+      /* an icon-only control is unusable on a screen reader without this */
+      aria-label={`${dark ? 'Dark' : 'Light'} theme. Switch to ${next}.`}
+      title={`Switch to ${next} theme`}
     >
-      <span className="theme-toggle-glyph" key={pref}>
+      <span className="theme-toggle-glyph" key={resolved}>
         <Icon />
       </span>
     </button>

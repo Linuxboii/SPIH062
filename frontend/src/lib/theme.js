@@ -1,7 +1,18 @@
 import { useCallback, useEffect, useState } from 'react'
 
 /**
- * Theme preference is tri-state: 'light' | 'dark' | 'system'.
+ * Theme is a binary switch that starts out following the OS.
+ *
+ * Stored preference is 'light' | 'dark' once the user has chosen, and
+ * 'system' until then — but 'system' is a starting condition, never a
+ * position on the control. An earlier version cycled system → light →
+ * dark, which meant that on a machine set to dark, "system" and "dark"
+ * rendered exactly the same page: one press in three did nothing
+ * visible, and two of the three icons were indistinguishable. A toggle
+ * whose states cannot be told apart is not a toggle.
+ *
+ * So: no stored choice → follow the OS, live. First press → an explicit
+ * light or dark that sticks and stops tracking the OS.
  *
  * The resolved value ('light' | 'dark') is stamped on <html data-theme>,
  * which is the only selector tokens.css reads. The same resolution runs
@@ -11,7 +22,7 @@ import { useCallback, useEffect, useState } from 'react'
  */
 
 const KEY = 'oncolens-theme'
-export const ORDER = ['system', 'light', 'dark']
+const STORED = ['light', 'dark']
 
 const mq = () =>
   typeof window !== 'undefined' && window.matchMedia
@@ -21,7 +32,7 @@ const mq = () =>
 export function readPref() {
   try {
     const v = localStorage.getItem(KEY)
-    return ORDER.includes(v) ? v : 'system'
+    return STORED.includes(v) ? v : 'system'
   } catch {
     return 'system'
   }
@@ -59,11 +70,13 @@ export function useTheme() {
     setPrefState(next)
   }, [])
 
-  const cycle = useCallback(() => {
-    setPref(ORDER[(ORDER.indexOf(readPref()) + 1) % ORDER.length])
+  /* flip against what is on screen, not against the stored value —
+     from 'system' the user means "give me the other one" */
+  const toggle = useCallback(() => {
+    setPref(resolve(readPref()) === 'dark' ? 'light' : 'dark')
   }, [setPref])
 
-  return { pref, resolved: resolve(pref), setPref, cycle }
+  return { pref, resolved: resolve(pref), setPref, toggle }
 }
 
 /**
