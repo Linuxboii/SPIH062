@@ -79,6 +79,7 @@ than presenting placeholder content as real evidence.
 
 - [`docs/PRD.md`](docs/PRD.md) — full product requirements
 - [`docs/DECK_CONTEXT.md`](docs/DECK_CONTEXT.md) — presentation source
+- [`docs/STATUS.md`](docs/STATUS.md) — current state, deployment map, known gaps
 
 ---
 
