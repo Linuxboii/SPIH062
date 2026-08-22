@@ -8,6 +8,7 @@ import Landing from './pages/Landing'
    renderer) load on navigation, so the first view ships almost no JS. */
 const Chat = lazy(() => import('./pages/Chat'))
 const Compound = lazy(() => import('./pages/Compound'))
+const Compounds = lazy(() => import('./pages/Compounds'))
 const NotFound = lazy(() => import('./pages/NotFound'))
 
 function ScrollToTop() {
@@ -40,6 +41,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/app" element={<Chat />} />
+            <Route path="/compounds" element={<Compounds />} />
             <Route path="/compound/:id" element={<Compound />} />
             <Route path="*" element={<NotFound />} />
           </Routes>

@@ -47,6 +47,25 @@ export async function getCompound(idOrName) {
   }
 }
 
+export async function listCompounds(params = {}) {
+  const qs = new URLSearchParams(
+    Object.entries(params).filter(([, v]) => v !== '' && v != null)
+  )
+  try {
+    return await req(`/api/compounds?${qs}`)
+  } catch {
+    return { items: [], total: 0, facets: {}, demo: true }
+  }
+}
+
+export async function getTargets() {
+  try {
+    return await req('/api/targets')
+  } catch {
+    return { items: [], demo: true }
+  }
+}
+
 export async function getStats() {
   try {
     return await req('/api/stats')

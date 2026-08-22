@@ -90,7 +90,7 @@ export function Nav() {
         ) : (
           <div className="nav-links">
             <NavLink to="/app">Assistant</NavLink>
-            <NavLink to="/compound/CHEMBL3353410">Compounds</NavLink>
+            <NavLink to="/compounds">Compounds</NavLink>
           </div>
         )}
 
@@ -132,7 +132,7 @@ export function Footer() {
             <span className="label">Product</span>
             <ul role="list">
               <li><Link to="/app">Assistant</Link></li>
-              <li><Link to="/compound/CHEMBL3353410">Compound explorer</Link></li>
+              <li><Link to="/compounds">Compound explorer</Link></li>
             </ul>
           </div>
         </div>

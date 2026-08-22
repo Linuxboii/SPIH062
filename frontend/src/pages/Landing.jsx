@@ -123,8 +123,8 @@ export default function Landing() {
                   strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </Link>
-            <Link className="btn btn-quiet" to="/compound/CHEMBL3353410">
-              Explore a compound
+            <Link className="btn btn-quiet" to="/compounds">
+              Browse compounds
             </Link>
           </div>
           <p className="hero-foot mono">

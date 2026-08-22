@@ -1,11 +1,138 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Query
 
 from ..db import fetch_all, fetch_one
 from ..services import entities, structured
 
 router = APIRouter()
+
+
+# Sort keys are whitelisted rather than interpolated — ORDER BY cannot be
+# parameterised, so anything reaching the query string must be a fixed literal.
+_SORTS = {
+    "evidence": "activity_count DESC, c.pref_name ASC",
+    "potency":  "best_pchembl DESC NULLS LAST, activity_count DESC",
+    "weight":   "c.mol_weight ASC NULLS LAST",
+    "name":     "c.pref_name ASC",
+}
+_PHASES = {
+    "approved":    "c.max_phase >= 4",
+    "trials":      "c.max_phase > 0 AND c.max_phase < 4",
+    "preclinical": "COALESCE(c.max_phase, 0) = 0",
+}
+
+
+@router.get("/compounds")
+def compounds(
+    q: str = "",
+    target: str = "",
+    phase: str = "approved",
+    sort: str = "evidence",
+    limit: int = Query(24, ge=1, le=60),
+    offset: int = Query(0, ge=0),
+):
+    """Browsable index over the compound corpus.
+
+    The detail route resolves one molecule; this is the list behind it. The
+    counts a caller needs to build a filter UI (how many are approved, how
+    many are in trials) are returned alongside the page, so the client does
+    not have to issue four more requests to label its own controls.
+    """
+    where, params = ["TRUE"], []
+
+    if q.strip():
+        like = f"%{q.strip()}%"
+        where.append(
+            """(c.pref_name ILIKE %s
+                OR c.chembl_id ILIKE %s
+                OR EXISTS (SELECT 1 FROM synonyms s
+                           WHERE s.chembl_id = c.chembl_id AND s.synonym ILIKE %s))"""
+        )
+        params += [like, f"{q.strip()}%", like]
+
+    if phase in _PHASES:
+        where.append(_PHASES[phase])
+
+
+    if target.strip():
+        where.append(
+            """EXISTS (SELECT 1 FROM activities x
+                       JOIN targets t ON t.chembl_id = x.target_id
+                       WHERE x.compound_id = c.chembl_id
+                         AND upper(t.gene_symbol) = upper(%s))"""
+        )
+        params.append(target.strip())
+
+    clause = " AND ".join(where)
+    # resolve before use AND before echoing — the response should report what
+    # the query actually did, never reflect an unrecognised value back
+    sort = sort if sort in _SORTS else "evidence"
+    phase = phase if phase in _PHASES else "all"
+    order = _SORTS[sort]
+
+    rows = fetch_all(
+        f"""SELECT c.chembl_id, c.pref_name, c.smiles, c.mol_formula,
+                   c.mol_weight, c.ro5_violations, c.max_phase, c.first_approval,
+                   COALESCE(a.n, 0) AS activity_count,
+                   a.best_pchembl
+            FROM compounds c
+            LEFT JOIN (SELECT compound_id,
+                              count(*) AS n,
+                              max(pchembl_value) AS best_pchembl
+                       FROM activities GROUP BY compound_id) a
+                   ON a.compound_id = c.chembl_id
+            WHERE {clause}
+            ORDER BY {order}
+            LIMIT %s OFFSET %s""",
+        (*params, limit, offset),
+    )
+
+    total = fetch_one(
+        f"""SELECT count(*) AS n FROM compounds c WHERE {clause}""", tuple(params)
+    )
+
+    # facet counts for the phase control, honouring the search and target
+    # filters but not the phase filter itself — otherwise every tab reads 0
+    facet_where = [w for w in where if w not in _PHASES.values()]
+    # the phase predicates carry no bind params, so dropping them from the
+    # WHERE list leaves the remaining params correctly ordered
+    facet_params = list(params)
+    facets = fetch_one(
+        f"""SELECT count(*) FILTER (WHERE c.max_phase >= 4)                       AS approved,
+                   count(*) FILTER (WHERE c.max_phase > 0 AND c.max_phase < 4)    AS trials,
+                   count(*) FILTER (WHERE COALESCE(c.max_phase, 0) = 0)           AS preclinical,
+                   count(*)                                                       AS all
+            FROM compounds c WHERE {' AND '.join(facet_where)}""",
+        tuple(facet_params),
+    )
+
+    return {
+        "items": rows,
+        "total": (total or {}).get("n", 0),
+        "limit": limit,
+        "offset": offset,
+        "facets": facets or {},
+        "sort": sort,
+        "phase": phase,
+        "target": target.strip().upper(),
+    }
+
+
+@router.get("/targets")
+def targets():
+    """The 15 modelled targets, with how many compounds have measured
+    activity against each — enough to build the target filter."""
+    return {
+        "items": fetch_all(
+            """SELECT t.gene_symbol, t.chembl_id, t.pref_name,
+                      count(DISTINCT a.compound_id) AS compound_count
+               FROM targets t
+               LEFT JOIN activities a ON a.target_id = t.chembl_id
+               GROUP BY t.gene_symbol, t.chembl_id, t.pref_name
+               ORDER BY t.gene_symbol"""
+        )
+    }
 
 
 @router.get("/compound/{query}")
