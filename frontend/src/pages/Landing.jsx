@@ -1,7 +1,11 @@
+import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import MoleculeField from '../components/MoleculeField'
 import { useReveal, useRevealGroup } from '../lib/useReveal'
+import { getStats } from '../lib/api'
 import '../styles/landing.css'
+
+const fmt = (n) => (typeof n === 'number' ? n.toLocaleString('en-US') : '—')
 
 /* ── content ─────────────────────────────────────────────── */
 
@@ -13,7 +17,7 @@ const CONTRASTS = [
   },
   {
     concern: 'Structured data',
-    chatbot: 'Flattens IC₅₀ = 12 nM into prose it may corrupt',
+    chatbot: 'Flattens IC₅₀ = 0.02 nM into prose it may corrupt',
     lens: 'Numbers stay in SQL tables — never paraphrased',
   },
   {
@@ -55,11 +59,11 @@ const PIPELINE = [
   },
 ]
 
-const SOURCES = [
-  { name: 'PubMed', detail: 'Abstracts, MeSH terms, metadata', count: '25,000', unit: 'abstracts' },
-  { name: 'ChEMBL', detail: 'Molecules and measured bioactivity', count: '10,000', unit: 'activities' },
-  { name: 'PubChem', detail: 'Formula, weight, SMILES, XLogP', count: '300', unit: 'compounds' },
-  { name: 'ClinicalTrials.gov', detail: 'Phase, status, conditions', count: '2,000', unit: 'studies' },
+const SOURCE_META = [
+  { name: 'PubMed', detail: 'Abstracts, MeSH terms, metadata', key: 'papers', unit: 'abstracts' },
+  { name: 'ChEMBL', detail: 'Measured bioactivity across 15 targets', key: 'activities', unit: 'activities' },
+  { name: 'PubChem', detail: 'Formula, weight, SMILES, XLogP', key: 'compounds', unit: 'compounds' },
+  { name: 'ClinicalTrials.gov', detail: 'Phase, status, conditions', key: 'trials', unit: 'studies' },
 ]
 
 const COMMITMENTS = [
@@ -84,6 +88,9 @@ const COMMITMENTS = [
 /* ── page ────────────────────────────────────────────────── */
 
 export default function Landing() {
+  const [stats, setStats] = useState(null)
+  useEffect(() => { getStats().then(setStats) }, [])
+
   const heroRef = useReveal()
   const contrastRef = useRevealGroup(60)
   const pipelineRef = useRevealGroup(90)
@@ -272,19 +279,19 @@ export default function Landing() {
               </div>
               <dl className="cmp-props">
                 <div><dt className="label">Formula</dt><dd className="mono">C₂₈H₃₃N₇O₂</dd></div>
-                <div><dt className="label">Weight</dt><dd className="mono">499.6</dd></div>
-                <div><dt className="label">XLogP</dt><dd className="mono">3.7</dd></div>
+                <div><dt className="label">Weight</dt><dd className="mono">499.62</dd></div>
+                <div><dt className="label">XLogP</dt><dd className="mono">4.51</dd></div>
                 <div><dt className="label">Ro5</dt><dd className="mono cmp-pass">0 violations</dd></div>
               </dl>
               <div className="cmp-targets">
-                <span className="label">Measured targets</span>
+                <span className="label">Measured potency · from ChEMBL</span>
                 <div className="cmp-target-row">
                   <span>EGFR</span>
-                  <span className="mono">IC₅₀ 12 nM</span>
+                  <span className="mono">IC₅₀ 0.02 nM · pChEMBL 10.7</span>
                 </div>
                 <div className="cmp-target-row">
-                  <span>ERBB2</span>
-                  <span className="mono">IC₅₀ 1.2 µM</span>
+                  <span>EGFR</span>
+                  <span className="mono">IC₅₀ 0.06 nM · pChEMBL 10.22</span>
                 </div>
               </div>
             </div>
@@ -305,9 +312,9 @@ export default function Landing() {
           </div>
 
           <div className="sources" ref={sourcesRef}>
-            {SOURCES.map((s) => (
+            {SOURCE_META.map((s) => (
               <div className="source card card-hover reveal" data-reveal key={s.name}>
-                <div className="source-count mono">{s.count}</div>
+                <div className="source-count mono">{fmt(stats?.[s.key])}</div>
                 <div className="source-unit label">{s.unit}</div>
                 <h3 className="source-name">{s.name}</h3>
                 <p className="source-detail">{s.detail}</p>
@@ -315,12 +322,63 @@ export default function Landing() {
             ))}
           </div>
 
+          <p className="corpus-note">
+            Live counts, read from the running index — not a target figure.
+            {stats?.chunks ? ` ${fmt(stats.chunks)} embedded passages` : ''}
+            {stats?.approved_compounds ? `, ${stats.approved_compounds} approved drugs` : ''}.
+          </p>
+
           <p className="targets-line">
             <span className="label">Targets</span>
             <span className="targets-list mono">
               EGFR · ALK · BRAF · KRAS · HER2 · PD-L1 · VEGFR2 · CDK4 · CDK6 · PARP1 ·
               BCR-ABL · ROS1 · BTK · MEK1 · mTOR
             </span>
+          </p>
+        </div>
+      </section>
+
+      {/* ── model performance ────────────────────────────── */}
+      <section className="section" id="model">
+        <div className="shell">
+          <div className="sec-head">
+            <p className="eyebrow">Drug–target prediction</p>
+            <h2 className="display h2">A real model, reported honestly.</h2>
+            <p className="prose sec-dek">
+              ECFP4 molecular fingerprints and gradient-boosted trees, trained on measured
+              ChEMBL bioactivity. Validated with a <strong>scaffold split</strong> rather
+              than a random one — random splits leak close analogues between train and test
+              and inflate the score into meaninglessness.
+            </p>
+          </div>
+
+          <div className="model-strip">
+            <div className="model-cell">
+              <span className="model-v">{stats?.dti_model?.mean_roc_auc ?? '—'}</span>
+              <span className="model-l">Mean ROC-AUC</span>
+            </div>
+            <div className="model-cell">
+              <span className="model-v">
+                {stats?.dti_model?.min_roc_auc ?? '—'}–{stats?.dti_model?.max_roc_auc ?? '—'}
+              </span>
+              <span className="model-l">Range across targets</span>
+            </div>
+            <div className="model-cell">
+              <span className="model-v">{stats?.dti_model?.targets_modelled ?? '—'}</span>
+              <span className="model-l">Targets modelled</span>
+            </div>
+            <div className="model-cell">
+              <span className="model-v">{fmt(stats?.predictions)}</span>
+              <span className="model-l">Predictions</span>
+            </div>
+          </div>
+
+          <p className="model-caption">
+            Held-out performance on a scaffold split, measured on this corpus. Every
+            prediction in the interface is labelled <em>predicted — not experimental</em>,
+            carries a calibrated probability, and shows the per-target AUC beside it.
+            Predictions that reproduce a measured activity are marked as such rather than
+            presented as discoveries.
           </p>
         </div>
       </section>

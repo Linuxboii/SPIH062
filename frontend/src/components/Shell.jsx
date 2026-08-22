@@ -53,6 +53,7 @@ export function Nav() {
             <a href="#why">Why</a>
             <a href="#how">How it works</a>
             <a href="#data">Data</a>
+            <a href="#model">Model</a>
             <a href="#responsible">Responsible AI</a>
           </div>
         ) : (

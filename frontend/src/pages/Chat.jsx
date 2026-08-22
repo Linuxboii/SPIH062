@@ -79,6 +79,46 @@ function AbstentionCard({ answer }) {
   )
 }
 
+function ValidationAudit({ v }) {
+  if (!v || v.generation_skipped) return null
+  const offered = v.citations_offered ?? 0
+  const ok = v.citations_validated ?? 0
+  const bad = v.citations_rejected ?? 0
+  if (!offered && !bad) return null
+
+  return (
+    <div className={`audit${bad ? ' has-rejects' : ''}`}>
+      <div className="audit-head">
+        <span className="label">Citation check</span>
+        <span className="audit-nums mono">
+          <span title="citations the model offered">{offered} offered</span>
+          <span className="audit-ok" title="verified against retrieved set">{ok} verified</span>
+          {bad > 0 && (
+            <span className="audit-bad" title="not in the retrieved set — removed">
+              {bad} rejected
+            </span>
+          )}
+        </span>
+      </div>
+      <p className="audit-note">
+        {bad > 0
+          ? 'Identifiers the model cited that retrieval never returned were stripped before display.'
+          : 'Every identifier the model cited was present in the retrieved set.'}
+      </p>
+      {v.rejected_detail?.length > 0 && (
+        <ul className="audit-list">
+          {v.rejected_detail.map((r, i) => (
+            <li key={i}>
+              <code>{r.rejected.join(', ')}</code>
+              <span className="audit-claim">{r.claim}</span>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  )
+}
+
 function StructuredTable({ structured }) {
   const acts = structured?.activities ?? []
   if (!acts.length) return null
@@ -222,6 +262,20 @@ export default function Chat() {
                 came from, and the assistant declines when the evidence is thin.
               </p>
 
+              {stats && !stats.demo && (
+                <div className="corpus-bar">
+                  <span className="label">Indexed corpus</span>
+                  <span className="mono">
+                    {stats.papers?.toLocaleString()} abstracts ·{' '}
+                    {stats.chunks?.toLocaleString()} passages ·{' '}
+                    {stats.compounds?.toLocaleString()} compounds ·{' '}
+                    {stats.activities?.toLocaleString()} activities ·{' '}
+                    {stats.trials?.toLocaleString()} trials ·{' '}
+                    {stats.targets} targets
+                  </span>
+                </div>
+              )}
+
               <div className="examples">
                 <span className="label">Try</span>
                 {EXAMPLES.map((ex) => (
@@ -265,13 +319,17 @@ export default function Chat() {
                   </div>
 
                   {t.answer.abstained ? (
-                    <AbstentionCard answer={t.answer} />
+                    <>
+                      <AbstentionCard answer={t.answer} />
+                      <ValidationAudit v={t.answer.validation} />
+                    </>
                   ) : (
                     <>
                       {t.answer.claims.map((c, ci) => (
                         <Claim key={ci} claim={c} onCite={openSourceById} />
                       ))}
                       <StructuredTable structured={t.answer.structured} />
+                      <ValidationAudit v={t.answer.validation} />
                     </>
                   )}
                 </div>

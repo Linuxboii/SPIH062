@@ -90,4 +90,20 @@ def suggest(q: str = ""):
 def stats():
     s = structured.stats()
     genes = fetch_all("SELECT gene_symbol FROM targets ORDER BY gene_symbol")
-    return {**s, "target_list": [g["gene_symbol"] for g in genes]}
+    approved = fetch_one("SELECT count(*) AS n FROM compounds WHERE max_phase >= 4")
+    preds = fetch_one("SELECT count(*) AS n FROM dti_predictions")
+    model = fetch_one(
+        """SELECT round(avg(roc_auc)::numeric, 3) AS mean_roc_auc,
+                  round(min(roc_auc)::numeric, 3) AS min_roc_auc,
+                  round(max(roc_auc)::numeric, 3) AS max_roc_auc,
+                  count(*) AS targets_modelled, max(split) AS split
+           FROM dti_metrics"""
+    )
+    return {
+        **s,
+        "approved_compounds": (approved or {}).get("n", 0),
+        "predictions": (preds or {}).get("n", 0),
+        "target_list": [g["gene_symbol"] for g in genes],
+        "dti_model": {k: (float(v) if k.endswith("auc") and v is not None else v)
+                      for k, v in (model or {}).items()},
+    }
